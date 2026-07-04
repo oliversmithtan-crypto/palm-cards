@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Paramedic Palm Cards</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #eef2f7; --white: #fff; --blue: #1a56db; --blue-dark: #1e3a8a; --blue-light: #dbeafe;
+  --purple: #7c3aed; --purple-light: #ede9fe; --black: #0f172a; --gray: #64748b;
+  --gray-light: #e2e8f0; --danger: #dc2626; --danger-light: #fef2f2; --warn: #d97706;
+  --warn-light: #fef9c3; --green: #059669; --green-light: #d1fae5; --sky: #0284c7;
+  --sky-light: #e0f2fe; --font: 'Nunito', sans-serif;
+}
+body { font-family:var(--font); background:var(--bg); color:var(--black); min-height:100vh;
+  display:flex; flex-direction:column; align-items:center; overflow-x:hidden; }
+
+/* ── TOP NAV ── */
+.topnav { width:100%; background:var(--white); border-bottom:2px solid var(--gray-light);
+  display:flex; align-items:center; gap:0; overflow-x:auto; position:sticky; top:0; z-index:200; }
+.topnav-title { font-size:15px; font-weight:900; color:var(--blue); padding:0.9rem 1rem;
+  white-space:nowrap; border-right:2px solid var(--gray-light); }
+.set-btn { background:none; border:none; font-family:var(--font); font-size:12px; font-weight:800;
+  color:var(--gray); padding:0 16px; height:48px; cursor:pointer; white-space:nowrap;
+  border-bottom:3px solid transparent; transition:all 0.15s; }
+.set-btn:hover { color:var(--blue); }
+.set-btn.active { color:var(--blue); border-bottom-color:var(--blue); }
+.set-btn.active-s2 { color:var(--purple); border-bottom-color:var(--purple); }
+.set-btn.active-s3 { color:var(--green); border-bottom-color:var(--green); }
+.revision-nav-btn { margin-left:auto; background:none; border:none; font-family:var(--font);
+  font-size:12px; font-weight:800; color:var(--warn); padding:0 16px; height:48px;
+  cursor:pointer; white-space:nowrap; border-left:2px solid var(--gray-light);
+  display:flex; align-items:center; gap:6px; }
+.revision-nav-btn:hover { background:var(--warn-light); }
+
+/* ── PAGE WRAPPER ── */
+.page { display:none; width:100%; max-width:680px; margin:0 auto; padding:1.25rem 1rem 5rem; flex-direction:column; align-items:center; }
+.page.active { display:flex; }
+
+/* ── HEADER ── */
+.hdr { width:100%; text-align:center; margin-bottom:1rem; }
+.hdr h1 { font-size:20px; font-weight:900; letter-spacing:-0.02em; }
+.hdr h1 span { color:var(--blue); }
+.hdr.s2 h1 span { color:var(--purple); }
+.hdr.s3 h1 span { color:var(--green); }
+.hdr p { font-size:12px; color:var(--gray); margin-top:2px; font-weight:600; }
+
+/* ── CONTROLS ── */
+.controls { width:100%; display:flex; flex-direction:column; gap:8px; margin-bottom:1rem; }
+.pill-row { display:flex; gap:6px; flex-wrap:wrap; }
+.pill { background:var(--white); border:2px solid var(--gray-light); color:var(--gray);
+  font-family:var(--font); font-size:11px; font-weight:700; padding:5px 12px;
+  border-radius:999px; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+.pill:hover { border-color:var(--blue); color:var(--blue); }
+.pill.ab { background:var(--blue);   border-color:var(--blue);   color:#fff; }
+.pill.ag { background:var(--green);  border-color:var(--green);  color:#fff; }
+.pill.ap { background:var(--purple); border-color:var(--purple); color:#fff; }
+.pill.aw { background:var(--warn);   border-color:var(--warn);   color:#fff; }
+.pill.as { background:var(--sky);    border-color:var(--sky);    color:#fff; }
+.pill.ad { background:var(--danger); border-color:var(--danger); color:#fff; }
+
+/* ── PROGRESS ── */
+.prog-wrap { width:100%; display:flex; align-items:center; gap:10px; margin-bottom:1rem; }
+.prog-track { flex:1; height:5px; background:var(--gray-light); border-radius:3px; overflow:hidden; }
+.prog-fill { height:100%; border-radius:3px; transition:width 0.3s; }
+.pf-blue   { background:var(--blue); }
+.pf-purple { background:var(--purple); }
+.pf-green  { background:var(--green); }
+.prog-lbl { font-size:12px; font-weight:800; color:var(--gray); white-space:nowrap; min-width:50px; text-align:right; }
+
+/* ── STAGE ── */
+.stage { width:100%; position:relative; height:430px; margin-bottom:0.5rem;
+  touch-action:none; overflow:hidden; }
+.slide-card { position:absolute; inset:0; will-change:transform,opacity; }
+.slide-card.enter-from-right { animation:enterR 0.32s cubic-bezier(0.22,1,0.36,1) forwards; }
+.slide-card.enter-from-left  { animation:enterL 0.32s cubic-bezier(0.22,1,0.36,1) forwards; }
+.slide-card.leave-to-left    { animation:leaveL 0.26s cubic-bezier(0.4,0,1,1) forwards; pointer-events:none; }
+.slide-card.leave-to-right   { animation:leaveR 0.26s cubic-bezier(0.4,0,1,1) forwards; pointer-events:none; }
+.slide-card.leave-upward     { animation:leaveU 0.35s cubic-bezier(0.4,0,1,1) forwards; pointer-events:none; }
+@keyframes enterR { from{transform:translateX(105%);opacity:0} to{transform:translateX(0);opacity:1} }
+@keyframes enterL { from{transform:translateX(-105%);opacity:0} to{transform:translateX(0);opacity:1} }
+@keyframes leaveL { from{transform:translateX(0);opacity:1} to{transform:translateX(-105%);opacity:0} }
+@keyframes leaveR { from{transform:translateX(0);opacity:1} to{transform:translateX(105%);opacity:0} }
+@keyframes leaveU { from{transform:translateY(0);opacity:1} to{transform:translateY(-120%);opacity:0} }
+
+/* ── FLIP ── */
+.flip-inner { width:100%; height:100%; position:relative; transform-style:preserve-3d;
+  transition:transform 0.42s cubic-bezier(0.4,0,0.2,1); cursor:pointer; }
+.flip-inner.flipped { transform:rotateY(180deg); }
+.card-face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  background:var(--white); border-radius:22px;
+  box-shadow:0 6px 28px rgba(15,23,42,0.11),0 1px 4px rgba(15,23,42,0.07);
+  display:flex; flex-direction:column; overflow:hidden; }
+.card-back-face { transform:rotateY(180deg); }
+.stripe { height:7px; flex-shrink:0; }
+.s-blue   { background:var(--blue); }
+.s-purple { background:var(--purple); }
+.s-green  { background:var(--green); }
+.s-warn   { background:var(--warn); }
+.s-sky    { background:var(--sky); }
+.s-danger { background:var(--danger); }
+.card-body { padding:1rem 1.25rem 1.25rem; display:flex; flex-direction:column; flex:1; overflow:hidden; position:relative; }
+.card-num { position:absolute; top:0.85rem; right:1rem; width:32px; height:32px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:900;
+  color:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.18); flex-shrink:0; }
+.n-blue   { background:var(--blue); }
+.n-purple { background:var(--purple); }
+.n-green  { background:var(--green); }
+.n-warn   { background:var(--warn); }
+.n-sky    { background:var(--sky); }
+.n-danger { background:var(--danger); }
+.card-label { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.12em; margin-bottom:0.5rem; flex-shrink:0; }
+.cl-blue   { color:var(--blue); } .cl-purple { color:var(--purple); } .cl-green  { color:var(--green); }
+.cl-warn   { color:var(--warn); } .cl-sky    { color:var(--sky); }   .cl-danger { color:var(--danger); }
+.card-title { font-size:26px; font-weight:900; letter-spacing:-0.03em; line-height:1.1;
+  color:var(--black); padding-right:42px; margin-bottom:3px; flex-shrink:0; }
+.card-sub { font-size:12px; font-weight:600; color:var(--gray); margin-bottom:0.85rem; flex-shrink:0; }
+.front-center { flex:1; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; text-align:center; padding:0 1rem; gap:0.75rem; }
+.front-term { font-size:34px; font-weight:900; letter-spacing:-0.03em; line-height:1.05; color:var(--black); }
+.cat-tag { font-size:11px; font-weight:800; padding:4px 12px; border-radius:999px; }
+.qpill { padding:0.85rem 1rem; border-radius:12px; font-size:13px; font-weight:700;
+  line-height:1.5; border-left:4px solid; flex-shrink:0; }
+.qp-blue   { background:var(--blue-light);   color:var(--blue-dark); border-color:var(--blue); }
+.qp-purple { background:var(--purple-light); color:var(--purple);    border-color:var(--purple); }
+.qp-green  { background:var(--green-light);  color:var(--green);     border-color:var(--green); }
+.qp-warn   { background:var(--warn-light);   color:var(--warn);      border-color:var(--warn); }
+.qp-sky    { background:var(--sky-light);    color:var(--sky);       border-color:var(--sky); }
+.qp-danger { background:var(--danger-light); color:var(--danger);    border-color:var(--danger); }
+.flip-hint-text { margin-top:auto; padding-top:0.5rem; text-align:center; font-size:11px;
+  font-weight:700; color:var(--gray); opacity:0.6; flex-shrink:0; }
+.back-scroll { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:0.5rem; }
+.back-scroll::-webkit-scrollbar { width:3px; }
+.back-scroll::-webkit-scrollbar-thumb { background:var(--gray-light); border-radius:2px; }
+.fl { font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:0.12em; color:var(--gray); margin-bottom:3px; }
+.fv { font-size:13px; font-weight:600; color:var(--black); line-height:1.6; }
+.fv b { font-weight:900; color:var(--blue-dark); }
+.field { display:flex; flex-direction:column; gap:2px; }
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
+.box { padding:0.6rem 0.85rem; border-left:4px solid; border-radius:0 10px 10px 0; }
+.box-danger { background:var(--danger-light); border-color:var(--danger); }
+.box-danger .fl { color:var(--danger); } .box-danger .fv { font-size:12px; color:#7f1d1d; }
+.box-blue   { background:var(--blue-light);   border-color:var(--blue); }
+.box-blue   .fl { color:var(--blue); }   .box-blue   .fv { font-size:12px; color:var(--blue-dark); }
+.abox { padding:0.85rem 1rem; border-left:4px solid; border-radius:0 12px 12px 0; }
+.ab-blue   { background:var(--blue-light);   border-color:var(--blue); }
+.ab-purple { background:var(--purple-light); border-color:var(--purple); }
+.ab-green  { background:var(--green-light);  border-color:var(--green); }
+.ab-warn   { background:var(--warn-light);   border-color:var(--warn); }
+.ab-sky    { background:var(--sky-light);    border-color:var(--sky); }
+.ab-danger { background:var(--danger-light); border-color:var(--danger); }
+.ab-blue   .fl { color:var(--blue); }   .ab-blue   .fv { color:var(--blue-dark); }
+.ab-purple .fl { color:var(--purple); } .ab-purple .fv { color:#4c1d95; }
+.ab-green  .fl { color:var(--green); }  .ab-green  .fv { color:#064e3b; }
+.ab-warn   .fl { color:var(--warn); }   .ab-warn   .fv { color:#78350f; }
+.ab-sky    .fl { color:var(--sky); }    .ab-sky    .fv { color:#0c4a6e; }
+.ab-danger .fl { color:var(--danger); } .ab-danger .fv { color:#7f1d1d; white-space:pre-line; }
+
+/* ── SWIPE UP HINT ── */
+.gesture-hints { width:100%; display:flex; justify-content:space-between; align-items:center;
+  padding:0 0.25rem; margin-bottom:1rem; }
+.gh { font-size:11px; font-weight:700; color:var(--gray); opacity:0.65; }
+.gh-revision { color:var(--warn); opacity:1; font-weight:800; }
+
+/* ── SWIPE UP INDICATOR (animated arrow on card) ── */
+.swipe-up-arrow { position:absolute; bottom:1rem; left:50%; transform:translateX(-50%);
+  font-size:11px; font-weight:800; color:var(--warn); opacity:0;
+  transition:opacity 0.3s; pointer-events:none; white-space:nowrap; }
+.show-up-hint .swipe-up-arrow { opacity:1; animation:bounce 1s infinite; }
+@keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-5px)} }
+
+/* ── REVISION PAGE ── */
+.rev-page { display:none; width:100%; flex-direction:column; align-items:center; padding:1.25rem 1rem 5rem; }
+.rev-page.active { display:flex; }
+.rev-header { width:100%; max-width:680px; text-align:center; margin-bottom:1.25rem; }
+.rev-header h1 { font-size:20px; font-weight:900; }
+.rev-header h1 span { color:var(--warn); }
+.rev-header p { font-size:12px; color:var(--gray); margin-top:2px; font-weight:600; }
+.rev-empty { text-align:center; padding:3rem 1rem; color:var(--gray); font-weight:700; font-size:15px; }
+.rev-grid { width:100%; max-width:680px; display:flex; flex-direction:column; gap:8px; }
+.rev-item { background:var(--white); border-radius:14px; padding:1rem 1.25rem;
+  box-shadow:0 2px 10px rgba(15,23,42,0.07); display:flex; align-items:center; gap:12px;
+  border-left:5px solid var(--warn); }
+.rev-item-text { flex:1; }
+.rev-item-name { font-size:14px; font-weight:900; color:var(--black); }
+.rev-item-set  { font-size:11px; font-weight:700; color:var(--gray); margin-top:2px; }
+.rev-remove-btn { background:none; border:2px solid var(--gray-light); border-radius:8px;
+  font-family:var(--font); font-size:11px; font-weight:700; color:var(--gray);
+  padding:5px 10px; cursor:pointer; white-space:nowrap; }
+.rev-remove-btn:hover { border-color:var(--danger); color:var(--danger); }
+.rev-study-btn { background:var(--warn); border:none; border-radius:12px; color:#fff;
+  font-family:var(--font); font-size:13px; font-weight:800; padding:10px 20px;
+  cursor:pointer; margin-top:1rem; width:100%; max-width:680px; }
+.rev-clear-btn { background:none; border:2px solid var(--gray-light); border-radius:12px;
+  color:var(--gray); font-family:var(--font); font-size:12px; font-weight:700;
+  padding:8px 20px; cursor:pointer; margin-top:8px; width:100%; max-width:680px; }
+.rev-badge { background:var(--warn); color:#fff; border-radius:50%; width:18px; height:18px;
+  font-size:10px; font-weight:900; display:inline-flex; align-items:center; justify-content:center; }
+
+</style>
+</head>
+<body>
+
+<div class="topnav">
+  <div class="topnav-title">🚑 Palm Cards</div>
+  <button class="set-btn active" id="nav-s1" onclick="showSet('s1')">Set 1 — Drugs & CPR</button>
+  <button class="set-btn" id="nav-s2" onclick="showSet('s2')">Set 2 — Jargon</button>
+  <button class="set-btn" id="nav-s3" onclick="showSet('s3')">Set 3 — Frameworks</button>
+  <button class="revision-nav-btn" id="nav-rev" onclick="showRevision()">📚 Revision <span class="rev-badge" id="rev-badge">0</span></button>
+</div>
+
+<!-- SET 1 -->
+<div class="page active" id="page-s1">
+  <div class="hdr">
+    <h1>Set 1 — <span>Drugs & CPR</span></h1>
+    <p id="s1-meta">Loading...</p>
+  </div>
+  <div class="controls">
+    <div class="pill-row">
+      <button class="pill ab" data-mode="full"        onclick="s1.setMode('full')">Full Card</button>
+      <button class="pill"    data-mode="dosage"      onclick="s1.setMode('dosage')">Dosage</button>
+      <button class="pill"    data-mode="timing"      onclick="s1.setMode('timing')">Timing</button>
+      <button class="pill"    data-mode="indications" onclick="s1.setMode('indications')">Indications</button>
+      <button class="pill"    data-mode="ci"          onclick="s1.setMode('ci')">Contraindications</button>
+    </div>
+    <div class="pill-row">
+      <button class="pill ab" id="s1-f-all"  onclick="s1.setFilter('all')">All</button>
+      <button class="pill"    id="s1-f-drug" onclick="s1.setFilter('drug')">Drugs</button>
+      <button class="pill"    id="s1-f-cpr"  onclick="s1.setFilter('cpr')">CPR</button>
+      <button class="pill"    id="s1-shuffle" onclick="s1.toggleShuffle()">⇄ Shuffle: Off</button>
+    </div>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-track"><div class="prog-fill pf-blue" id="s1-pbar" style="width:0%"></div></div>
+    <div class="prog-lbl" id="s1-lbl">—</div>
+  </div>
+  <div class="stage" id="s1-stage"></div>
+  <div class="gesture-hints">
+    <span class="gh">← swipe to navigate →</span>
+    <span class="gh gh-revision">↑ swipe up = revision pile</span>
+    <span class="gh">tap to flip</span>
+  </div>
+</div>
+
+<!-- SET 2 -->
+<div class="page" id="page-s2">
+  <div class="hdr s2">
+    <h1>Set 2 — <span>Medical Jargon</span></h1>
+    <p id="s2-meta">Loading...</p>
+  </div>
+  <div class="controls">
+    <div class="pill-row">
+      <button class="pill ap" id="s2-f-all"   onclick="s2.setFilter('all')">All Terms</button>
+      <button class="pill"    id="s2-f-cond"  onclick="s2.setFilter('conditions')">Conditions</button>
+      <button class="pill"    id="s2-f-meas"  onclick="s2.setFilter('measurements')">Measurements</button>
+      <button class="pill"    id="s2-f-rout"  onclick="s2.setFilter('routes')">Routes</button>
+      <button class="pill"    id="s2-f-dt"    onclick="s2.setFilter('drug-types')">Drug Types</button>
+      <button class="pill"    id="s2-f-con"   onclick="s2.setFilter('contra')">CI Terms</button>
+      <button class="pill"    id="s2-f-oth"   onclick="s2.setFilter('other')">Other</button>
+      <button class="pill"    id="s2-shuffle" onclick="s2.toggleShuffle()">⇄ Shuffle: Off</button>
+    </div>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-track"><div class="prog-fill pf-purple" id="s2-pbar" style="width:0%"></div></div>
+    <div class="prog-lbl" id="s2-lbl">—</div>
+  </div>
+  <div class="stage" id="s2-stage"></div>
+  <div class="gesture-hints">
+    <span class="gh">← swipe to navigate →</span>
+    <span class="gh gh-revision">↑ swipe up = revision pile</span>
+    <span class="gh">tap to flip</span>
+  </div>
+</div>
+
+<!-- SET 3 -->
+<div class="page" id="page-s3">
+  <div class="hdr s3">
+    <h1>Set 3 — <span>Frameworks</span></h1>
+    <p id="s3-meta">Loading...</p>
+  </div>
+  <div class="controls">
+    <div class="pill-row" id="s3-filter-row">
+      <button class="pill ag" id="s3-f-all" onclick="s3.setFilter('all')">All</button>
+    </div>
+    <div class="pill-row">
+      <button class="pill" id="s3-shuffle" onclick="s3.toggleShuffle()">⇄ Shuffle: Off</button>
+    </div>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-track"><div class="prog-fill pf-green" id="s3-pbar" style="width:0%"></div></div>
+    <div class="prog-lbl" id="s3-lbl">—</div>
+  </div>
+  <div class="stage" id="s3-stage"></div>
+  <div class="gesture-hints">
+    <span class="gh">← swipe to navigate →</span>
+    <span class="gh gh-revision">↑ swipe up = revision pile</span>
+    <span class="gh">tap to flip</span>
+  </div>
+</div>
+
+<!-- REVISION PAGE -->
+<div class="rev-page" id="page-rev">
+  <div class="rev-header">
+    <h1>📚 <span>Revision Pile</span></h1>
+    <p id="rev-meta">Cards you swiped up to revisit</p>
+  </div>
+  <div id="rev-content"></div>
+  <button class="rev-study-btn" id="rev-study-btn" onclick="studyRevision()" style="display:none">Study Revision Pile</button>
+  <button class="rev-clear-btn" id="rev-clear-btn" onclick="clearRevision()" style="display:none">Clear All</button>
+</div>
+
+<script>
+
+// ══════════════════════════════
+// DATA
+// ══════════════════════════════
+const DRUGS=[
+  {type:'drug',name:'Adrenaline',sub:'1mg/1ml',
+   indications:'Anaphylaxis / Severe Asthma',
+   route:'IM (intramuscular)',dose:'0.5mg',volume:'0.5ml of 1:1,000 solution',
+   repeat:'Every 5 minutes as clinically required — no maximum stated.',
+   ci:'Nil documented contraindications.',
+   notes:'First-line for anaphylaxis. Give into outer mid-thigh. No listed contraindications.'},
+  {type:'drug',name:'Aspirin',sub:'300mg tablet',
+   indications:'Suspected Acute Coronary Syndromes (ACS)',
+   route:'PO — chewed',dose:'300mg',volume:'1 × 300mg tablet',
+   repeat:'Single dose only. Do not repeat.',
+   ci:'Hypersensitivity to aspirin, salicylates or NSAIDs; under 16 years of age.',
+   notes:'Chewing speeds absorption. Confirm patient has not already taken aspirin today.'},
+  {type:'drug',name:'Cophenylcaine',sub:'Lignocaine 5mg + Phenylephrine 0.5mg/spray',
+   indications:'Local pain relief: abrasions, small cuts & wounds; mild–moderate epistaxis; post-tonsillectomy haemorrhage; intra-oral haemorrhage',
+   route:'IN or PO/Topical',dose:'IN: max 10 sprays (5/nostril) | PO/Topical: max 5 sprays',volume:'1 spray per application',
+   repeat:'IN: max 10 sprays/session. PO/Topical: max 5 sprays/session. Single session only.',
+   ci:'Hypersensitivity to phenylephrine, lignocaine or other local anaesthetics; pregnancy.',
+   notes:'Lignocaine = anaesthetic. Phenylephrine = vasoconstrictor (reduces epistaxis bleeding).'},
+  {type:'drug',name:'Fentanyl',sub:'450mcg/1.5ml — Intranasal only',
+   indications:'Moderate to severe pain; ACS where GTN has been ineffective',
+   route:'IN (intranasal)',dose:'Adult: 180mcg initial | Elderly/frail: 90mcg initial',volume:'Adult: 3×0.2ml (alternate nostrils) | Elderly: 2×0.15ml',
+   repeat:'Adult: 60mcg (1×0.2ml) after 5–10 mins. Elderly: 45mcg (1×0.15ml) after 5–10 mins.',
+   ci:'Hypersensitivity to fentanyl; occluded nasal passages; active epistaxis.',
+   notes:'Alternate nostrils per spray. Monitor RR, GCS and SpO2. Structured repeat — not ad hoc.'},
+  {type:'drug',name:'Glucagon',sub:'1mg/1ml — reconstitute before use',
+   indications:'Hypoglycaemia where oral glucose cannot be given AND IV access unobtainable; altered conscious state in known diabetic or unknown cause where BGL <4mmol/L',
+   route:'IM (intramuscular)',dose:'1mg',volume:'1ml (reconstituted)',
+   repeat:'Repeat ONCE after 10 minutes if no improvement.',
+   ci:'Hypersensitivity to glucagon; phaeochromocytoma; insulinoma; glucagonoma.',
+   notes:'Ineffective if glycogen stores depleted. Nausea/vomiting common on waking — recovery position.'},
+  {type:'drug',name:'Glucose Gel',sub:'15g per tube',
+   indications:'Hypoglycaemia; altered conscious state in known diabetic or unknown cause where BGL <4mmol/L',
+   route:'PO — oral or buccal',dose:'15g',volume:'1 full tube (15g)',
+   repeat:'Repeat after 10 minutes if still altered or deteriorating.',
+   ci:'Patient unable to safely ingest orally/buccally — aspiration risk.',
+   notes:'Can be given buccally if drowsy but airway protected. Monitor BGL and GCS.'},
+  {type:'drug',name:'GTN',sub:'Glyceryl Trinitrate 400mcg/spray',
+   indications:'Cardiac chest pain not relieved by rest (BP >90mmHg, HR 50–150); Acute Cardiogenic Pulmonary Oedema (BP >90mmHg); Autonomic Dysreflexia (BP >160mmHg); Suspected Irukandji sting (BP >160mmHg)',
+   route:'SL (sublingual)',dose:'400mcg',volume:'1 spray sublingually',
+   repeat:'Cardiac/APO: every 5 mins if BP maintained >90mmHg. Dysreflexia/Irukandji: every 5 mins until symptoms resolve or BP <160mmHg.',
+   ci:'Hypersensitivity; BP <90mmHg; VT; Sildenafil/Avanafil within 24hrs; Tadalafil within 3 days; Riociguat (any use).',
+   notes:'ALWAYS check BP before each dose. PDE5 inhibitor interaction = potentially fatal hypotension.'},
+  {type:'drug',name:'Ipratropium Bromide',sub:'250mcg/1ml nebuliser solution',
+   indications:'Severe bronchospasm in severe to life-threatening asthma or COPD',
+   route:'NEB (nebulised)',dose:'500mcg',volume:'2ml diluted with 2–3ml NaCl 0.9% — co-administered with salbutamol',
+   repeat:'Every 20 minutes. Maximum 3 doses total.',
+   ci:'Hypersensitivity to ipratropium bromide.',
+   notes:'ALWAYS co-administer with salbutamol. Never used alone. Reserved for severe/life-threatening.'},
+  {type:'drug',name:'Loratadine',sub:'10mg tablet',
+   indications:'Symptomatic urticaria (hives) WITHOUT any evidence of anaphylaxis',
+   route:'PO (oral)',dose:'10mg',volume:'1 × 10mg tablet',
+   repeat:'Single dose only. Do not repeat.',
+   ci:'Children under 30kg; hypersensitivity to loratadine.',
+   notes:'Non-sedating antihistamine. For mild skin reactions ONLY. If ANY anaphylaxis sign — use Adrenaline, NOT loratadine.'},
+  {type:'drug',name:'Methoxyflurane',sub:'3ml inhaler (Penthrox)',
+   indications:'Analgesia for moderate to severe acute pain',
+   route:'IH (inhaled via Penthrox inhaler)',dose:'3ml per session',volume:'3ml loaded into Penthrox inhaler',
+   repeat:'Repeat once at 30 minutes if required. Max 6ml/day. Max 15ml/week.',
+   ci:'Hypersensitivity to fluorinated anaesthetics; under 1 year; unable to co-operate (incl. alcohol/drugs); severe head injury with altered consciousness; susceptible to malignant hyperthermia.',
+   notes:'Patient self-administers. Do not exceed weekly limits — nephrotoxicity risk. Onset within seconds.'},
+  {type:'drug',name:'Midazolam',sub:'15mg/3ml (5mg/ml)',
+   indications:'Prolonged seizure ≥5 mins OR recurrent/status epilepticus; focal seizure ≥5 mins with GCS ≤12; 2nd-line sedation after droperidol (disturbed behaviour); 2nd-line sedation after ketamine (pregnant patient)',
+   route:'IM (intramuscular)',dose:'Adult <70yrs: 5mg | Adult ≥70yrs or frail: 2.5mg',volume:'Adult <70yrs: 1ml | Adult ≥70yrs/frail: 0.5ml',
+   repeat:'Repeat once after 10 minutes (same age-appropriate dose).',
+   ci:'Hypersensitivity; ketamine sedation requires ASMA Authority (non-pregnant) or STORC consult (pregnant).',
+   notes:'Benzodiazepine — respiratory depression risk, have BVM ready. Age/frailty dosing critical. Time seizure from ONSET not arrival.'},
+  {type:'drug',name:'Ondansetron',sub:'4mg',
+   indications:'Moderate to severe nausea; active vomiting; nausea/vomiting prophylaxis for eye injuries and spinal injuries',
+   route:'PRN (oral wafer, IV or IM depending on context)',dose:'4mg',volume:'4mg dose',
+   repeat:'Repeat once after 15 minutes. No further doses for 8 hours after the second dose.',
+   ci:'Hypersensitivity; concurrent apomorphine use (severe hypotension risk); under 2 years of age.',
+   notes:'5-HT3 antagonist antiemetic. Apomorphine interaction is absolute — always check medications.'},
+  {type:'drug',name:'Paracetamol',sub:'500mg tablet',
+   indications:'Mild to moderate pain (headache, musculoskeletal sprain); component of multimodal analgesia',
+   route:'PO (oral)',dose:'500mg – 1000mg',volume:'1–2 × 500mg tablets',
+   repeat:'Every 4–6 hours as required. Maximum 4g (8 tablets) per 24 hours.',
+   ci:'Hypersensitivity to paracetamol.',
+   notes:'Ask if patient has already taken paracetamol — hepatotoxicity risk if daily max exceeded.'},
+  {type:'drug',name:'Salbutamol',sub:'5mg/2.5ml nebuliser solution',
+   indications:'Bronchospasm & respiratory distress with wheeze: acute asthma; bronchitis; smoke inhalation; severe allergic/anaphylactic reactions; non-cardiac APO; salt water aspiration syndrome; COPD',
+   route:'NEB (nebuliser) or MDI (with spacer)',dose:'NEB: Asthma mod/severe 5mg | Life-threatening 10mg | COPD 5mg. MDI: 4–12 puffs.',volume:'1–2 nebs depending on indication/severity',
+   repeat:'Every 20 minutes (or sooner if required) for the first hour.',
+   ci:'Hypersensitivity to salbutamol; cardiogenic pulmonary oedema; age <12 months.',
+   notes:'Beta-2 agonist. Life-threatening asthma = 10mg (two 5mg nebs). Monitor HR — tachycardia common. Do NOT use in cardiogenic APO.'},
+];
+const CPR=[
+  {type:'cpr',name:'Chain of Survival',
+   question:'What are the 5 links in the adult Chain of Survival?',
+   answer:'1. Early recognition & call for help (activate EMS)\n2. Early CPR — high quality, minimise interruptions\n3. Early defibrillation (AED/defibrillator ASAP)\n4. Advanced life support (paramedic/hospital)\n5. Post-resuscitation care & recovery'},
+  {type:'cpr',name:'Recognising Cardiac Arrest',
+   question:'How do you recognise cardiac arrest and what are your immediate actions?',
+   answer:'RECOGNITION:\n• Unresponsive (no response to voice or sternal rub)\n• Not breathing normally (absent or agonal gasping)\n• No central pulse — check carotid ≤10 seconds\n\nIMMEDIATE ACTIONS:\n1. Call for help / activate EMS\n2. Begin chest compressions immediately\n3. Attach defibrillator ASAP\n4. Note time of collapse & CPR commencement'},
+  {type:'cpr',name:'Adult CPR — Rate & Depth',
+   question:'What is the correct compression rate, depth and technique for adult CPR?',
+   answer:'RATE: 100–120 compressions per minute\nDEPTH: At least 5cm — do not exceed 6cm\nRECOIL: Full chest recoil — never lean between compressions\nHAND POSITION: Heel of one hand on lower half of sternum, second hand on top, fingers interlaced & lifted\nARMS: Straight, elbows locked, shoulders directly over hands\nPAUSES: Less than 10 seconds for any interruption'},
+  {type:'cpr',name:'Compression:Ventilation Ratio',
+   question:'What is the C:V ratio for adult CPR — with and without an advanced airway?',
+   answer:'WITHOUT ADVANCED AIRWAY:\n30:2 — 30 compressions then 2 ventilations\nBrief pause for ventilations\n\nWITH ADVANCED AIRWAY (ETT/SGA):\nContinuous compressions 100–120/min\n1 breath every 6 seconds (10/min)\nDO NOT pause compressions for ventilations\n\nEach breath: 1 second, visible chest rise. Avoid hyperventilation.'},
+  {type:'cpr',name:'Shockable vs Non-Shockable',
+   question:'Which cardiac arrest rhythms are shockable and which are non-shockable?',
+   answer:'SHOCKABLE — defibrillate:\n• Ventricular Fibrillation (VF)\n• Pulseless Ventricular Tachycardia (pVT)\n→ Shock → immediately resume CPR 2 mins → re-analyse\n\nNON-SHOCKABLE — no shock:\n• Pulseless Electrical Activity (PEA)\n• Asystole\n→ High-quality CPR → treat 4Hs & 4Ts → re-analyse every 2 mins'},
+  {type:'cpr',name:'AED Steps',
+   question:'What are the correct steps for using an AED?',
+   answer:'1. Power on the AED immediately\n2. Attach pads (continue CPR if possible):\n   Right: below right clavicle\n   Left: lateral chest wall (apex/V6)\n3. Clear patient — nobody touching\n4. Analyse rhythm — do not touch patient\n5. If shock advised: all clear → deliver shock\n6. IMMEDIATELY resume CPR (compressions first)\n7. CPR for 2 minutes then re-analyse\n\nHands-off time around shock must be <5 seconds.'},
+  {type:'cpr',name:'Reversible Causes — 4Hs & 4Ts',
+   question:'What are the reversible causes of cardiac arrest (4Hs & 4Ts)?',
+   answer:'4 Hs:\n• Hypoxia\n• Hypovolaemia\n• Hypo/Hyperkalaemia (electrolytes)\n• Hypothermia\n\n4 Ts:\n• Tension pneumothorax\n• Tamponade (cardiac)\n• Toxins / Thrombosis (coronary)\n• Thrombosis (pulmonary embolism)\n\nConsider for ALL non-shockable rhythms & refractory VF/pVT'},
+  {type:'cpr',name:'Infant CPR (under 1 year)',
+   question:'How does CPR technique differ for infants under 1 year?',
+   answer:'DEPTH: ≥1/3 chest depth (~4cm)\nTECHNIQUE:\n  1 rescuer: 2 fingers on lower sternum\n  2 HCPs: 2-thumb encircling technique\nRATIO: 30:2 (1 rescuer) or 15:2 (2 HCPs)\nRATE: 100–120/min\nHEAD: Neutral — do NOT hyperextend\nBREATHS: Gentle puffs, cover mouth AND nose\nINITIAL: 5 rescue breaths BEFORE compressions'},
+  {type:'cpr',name:'Child CPR (1 year to puberty)',
+   question:'How does CPR technique differ for children 1 year to puberty?',
+   answer:'DEPTH: ≥1/3 chest depth (~5cm)\nTECHNIQUE: 1 or 2 hands (size-dependent)\nRATIO: 30:2 (single) or 15:2 (two HCPs)\nRATE: 100–120/min\nINITIAL: 5 rescue breaths BEFORE compressions\nLONE RESCUER: 1 minute CPR before leaving for help\nAED: Paediatric pads/mode if available'},
+  {type:'cpr',name:'High-Quality CPR',
+   question:'What are the key targets for high-quality CPR?',
+   answer:'RATE: 100–120/min\nDEPTH: 5–6cm adult\nRECOIL: Full — never lean\nPAUSES: <10 seconds\nCCF: Chest compression fraction >80%\nVENTILATION: 1 breath/6 sec with advanced airway\nROTATION: Change compressor every 2 minutes\nETCO2: Target >10mmHg — sudden rise signals ROSC\nFEEDBACK: Use CPR feedback device if available'},
+  {type:'cpr',name:'Post-Resuscitation (ROSC)',
+   question:'What are the priorities following Return of Spontaneous Circulation?',
+   answer:'AIRWAY & BREATHING:\n• SpO2 target 94–98% — avoid hyperoxia\n• ETCO2 target 35–45mmHg\n\nCIRCULATION:\n• Systolic BP ≥100mmHg target\n• 12-lead ECG — identify STEMI for cath lab\n\nDISABILITY:\n• TTM if comatose post-ROSC\n• Monitor & treat BGL\n\nGENERAL:\n• Treat reversible causes\n• Pre-notify hospital early\n• Reassess continuously — re-arrest risk high'},
+];
+const TERMS = [
+  {cat:'conditions',term:'Anaphylaxis',short:'Severe, life-threatening allergic reaction',def:'The whole body overreacts to a trigger (food, drug, bee sting). Can cause the throat to swell shut, blood pressure to crash, and widespread hives. Treated with Adrenaline IM as the first line — no contraindications listed for this drug.'},
+  {cat:'conditions',term:'ACS',short:'Acute Coronary Syndrome',def:'An umbrella term for when blood supply to the heart is suddenly blocked or severely reduced. Includes heart attacks (STEMI/NSTEMI) and unstable angina. The heart is not getting enough blood — it is an emergency. Aspirin and GTN are key prehospital drugs.'},
+  {cat:'conditions',term:'Angina',short:'Chest pain from reduced blood supply to the heart',def:'Pain or discomfort caused by the heart muscle not getting enough oxygen-rich blood. Stable angina occurs with exertion. Unstable angina happens at rest or worsens progressively — this is the dangerous kind and falls under ACS.'},
+  {cat:'conditions',term:'Epistaxis',short:'Nosebleed',def:'Bleeding from the nose. Can be anterior (front of the nose — most common, easier to treat) or posterior (back of the nose — more serious). Cophenylcaine is used for mild to moderate epistaxis. It is also a contraindication for fentanyl — active epistaxis blocks intranasal delivery.'},
+  {cat:'conditions',term:'Urticaria',short:'Hives',def:'Raised, itchy, red or pale welts on the skin caused by an allergic reaction. The body releases histamine which causes the skin to react. Treated with loratadine if there is no evidence of anaphylaxis. If anaphylaxis is present, use Adrenaline instead.'},
+  {cat:'conditions',term:'Hypoglycaemia',short:'Dangerously low blood sugar',def:'Blood glucose drops below the level the brain needs to function (below 4mmol/L is the clinical threshold). Symptoms range from sweating and confusion through to seizures and unconsciousness. Treated with glucose gel (if patient can swallow), glucagon IM, or IV dextrose.'},
+  {cat:'conditions',term:'Pulmonary Oedema',short:'Fluid build-up in the lungs',def:'Fluid leaks into the air sacs of the lungs, making gas exchange very difficult. Cardiogenic means the heart is failing to pump blood forward so it backs up into the lungs. Non-cardiogenic has other causes — smoke inhalation, drowning, salt water aspiration. Treatment differs depending on cause.'},
+  {cat:'conditions',term:'APO',short:'Acute Pulmonary Oedema',def:'A sudden, severe build-up of fluid in the lungs. The patient typically sits bolt upright, is gasping for breath, and may cough up frothy pink fluid. Cardiogenic APO is treated with GTN (if BP allows) and oxygen. Non-cardiogenic APO is treated with salbutamol. Do NOT give salbutamol in cardiogenic APO.'},
+  {cat:'conditions',term:'Autonomic Dysreflexia',short:'Dangerous BP spike in spinal injury patients',def:'Only occurs in patients with a spinal cord injury above the T6 level. A stimulus below the injury (e.g. full bladder, pressure sore) triggers an uncontrolled sympathetic surge causing a massive spike in blood pressure. Can cause stroke or death. Treated with GTN if systolic BP >160mmHg.'},
+  {cat:'conditions',term:'Irukandji Syndrome',short:'Reaction to Irukandji jellyfish sting',def:'Caused by the sting of the tiny Irukandji jellyfish found in northern Australian waters. Causes severe generalised pain, nausea, vomiting, sweating, anxiety and a dangerous spike in blood pressure. GTN is given if systolic BP >160mmHg, repeated every 5 minutes until symptoms resolve.'},
+  {cat:'conditions',term:'Bronchospasm',short:'Airway muscles tightening and narrowing the airway',def:'Smooth muscle around the airways contracts and squeezes them narrower, causing wheeze and difficulty breathing. This is what happens in an asthma attack. Treated with bronchodilators — salbutamol (beta-2 agonist) and ipratropium bromide (anticholinergic) together for severe cases.'},
+  {cat:'conditions',term:'COPD',short:'Chronic Obstructive Pulmonary Disease',def:'A permanent, progressive lung disease (usually from long-term smoking) where the airways are narrowed and lung tissue is damaged. Includes emphysema and chronic bronchitis. These patients rely on hypoxic drive to breathe — be cautious with high-flow oxygen. Salbutamol and ipratropium bromide are used.'},
+  {cat:'conditions',term:'Status Epilepticus',short:'Seizure lasting 5+ minutes or repeated seizures',def:'A prolonged seizure that does not stop on its own after 5 minutes, or multiple seizures without the patient recovering between them. This is a medical emergency as prolonged seizure activity causes brain damage and can be fatal. Treated with midazolam IM — timed from onset, not from paramedic arrival.'},
+  {cat:'conditions',term:'Focal Seizure',short:'Seizure starting in one specific area of the brain',def:'Unlike a generalised seizure (full body convulsion), a focal seizure starts in one specific area of the brain. It may only affect one side of the body, cause unusual sensations, or cause blank staring. If it lasts 5+ minutes with a GCS of 12 or below, midazolam is indicated.'},
+  {cat:'conditions',term:'Malignant Hyperthermia',short:'Rare life-threatening reaction to certain anaesthetics',def:'A rare genetic condition where exposure to certain volatile anaesthetic agents triggers a dangerous uncontrolled reaction — body temperature rockets and muscles go into metabolic crisis. It can be fatal. This is why susceptibility to malignant hyperthermia is a contraindication for methoxyflurane.'},
+  {cat:'conditions',term:'Phaeochromocytoma',short:'Adrenal gland tumour causing adrenaline surges',def:'A rare tumour on the adrenal gland that intermittently releases massive bursts of adrenaline and noradrenaline. Giving glucagon to these patients can trigger a dangerous, uncontrolled blood pressure surge — hence it is listed as a contraindication for glucagon.'},
+  {cat:'conditions',term:'Insulinoma & Glucagonoma',short:'Rare pancreatic tumours affecting blood sugar',def:'Insulinoma is a tumour of the pancreas that makes too much insulin, causing repeated hypoglycaemia. Glucagonoma makes too much glucagon. Both are contraindications for glucagon because the drug behaves unpredictably in these patients and can cause dangerous blood glucose swings.'},
+  {cat:'conditions',term:'Salt Water Aspiration Syndrome',short:'Lung reaction from inhaling salt water',def:'Inhaling salt water (e.g. near-drowning in the ocean) causes the lungs to react — the hypertonic salt draws fluid into the alveoli, causing respiratory distress similar to pulmonary oedema. Salbutamol is used to treat the bronchospasm component. Listed as an indication for salbutamol.'},
+
+  {cat:'measurements',term:'Blood Pressure (BP)',short:'Pressure of blood against artery walls',def:'Written as two numbers e.g. 120/80mmHg. The top number (systolic) is the pressure when the heart beats and ejects blood. The bottom number (diastolic) is the pressure between beats. Low BP — hypotension — means not enough blood is reaching vital organs. Critical check before giving GTN.'},
+  {cat:'measurements',term:'Systolic BP',short:'The top number in a blood pressure reading',def:'The pressure in the arteries at the moment the heart beats. When a drug says it requires systolic BP >90mmHg (like GTN), it means this top number must be above 90 before you give it. Below 90 systolic = hypotension and GTN is contraindicated. Always recheck before repeating doses.'},
+  {cat:'measurements',term:'mmHg',short:'Millimetres of mercury — unit of pressure',def:'The standard unit used to measure blood pressure and other pressures in the body. Refers to how high a column of mercury the pressure could push. Used for blood pressure readings (e.g. 120mmHg systolic) and for gas pressures like ETCO2 (e.g. 35–45mmHg target post-ROSC).'},
+  {cat:'measurements',term:'Heart Rate (HR)',short:'Number of heartbeats per minute',def:'Measured in beats per minute (bpm). Normal adult resting heart rate is 60–100bpm. For GTN to be given for cardiac chest pain, HR must be between 50–150bpm. Salbutamol commonly causes tachycardia (fast heart rate) as a side effect due to mild beta-1 stimulation.'},
+  {cat:'measurements',term:'GCS',short:'Glasgow Coma Scale — measures consciousness',def:'Scored 3 to 15 based on three responses: eye opening (1–4), verbal response (1–5), and motor response (1–6). 15 is fully awake. 3 is completely unresponsive. A GCS of 12 or below indicates significant impairment — relevant to the midazolam focal seizure indication.'},
+  {cat:'measurements',term:'SpO2',short:'Oxygen saturation of the blood',def:'The percentage of haemoglobin carrying oxygen, measured non-invasively with a pulse oximeter on the finger. Normal is 95–100%. Below 94% is concerning. Important to monitor when giving fentanyl or midazolam — both can cause respiratory depression and drop SpO2.'},
+  {cat:'measurements',term:'ETCO2',short:'End-tidal CO2 — carbon dioxide at end of exhale',def:'Measures the concentration of CO2 in exhaled air at the very end of each breath. Gives a real-time picture of ventilation and circulation. In CPR, ETCO2 >10mmHg suggests effective compressions. A sudden rise to 35–40mmHg often signals return of spontaneous circulation (ROSC).'},
+  {cat:'measurements',term:'BGL',short:'Blood Glucose Level',def:'The concentration of glucose in the blood, measured in mmol/L. Normal fasting BGL is roughly 4–6mmol/L. Below 4mmol/L is hypoglycaemia and requires treatment. Glucagon and glucose gel are both indicated when BGL is under 4mmol/L in a patient with an altered conscious state.'},
+  {cat:'measurements',term:'mmol/L',short:'Millimoles per litre — unit for blood glucose',def:'The unit used in Australia to measure the concentration of substances in blood. For blood glucose: below 4mmol/L = hypoglycaemia requiring treatment. 4–10mmol/L = normal to mildly elevated. Above 15mmol/L = significantly elevated (hyperglycaemia). Also used for electrolytes like potassium.'},
+
+  {cat:'routes',term:'IM — Intramuscular',short:'Injected into a muscle',def:'The needle goes into muscle tissue — usually the outer mid-thigh (vastus lateralis) or upper arm (deltoid). Absorbed faster than oral but slower than IV. Used for adrenaline (anaphylaxis), glucagon (hypoglycaemia), midazolam (seizures), and ondansetron. Reliable when IV is unavailable.'},
+  {cat:'routes',term:'IV — Intravenous',short:'Injected directly into a vein',def:'The fastest route — the drug enters the bloodstream immediately. Used in hospital and by advanced paramedics. Most 1st year drugs avoid IV. It is referenced in the drug list as the alternative that cannot be obtained before giving glucagon — if you can get IV access, use IV dextrose instead.'},
+  {cat:'routes',term:'PO — Per Os',short:'Swallowed by mouth',def:'From the Latin "per os" meaning by mouth. The drug is swallowed and absorbed through the gastrointestinal tract. Used for aspirin (chewed for faster absorption), paracetamol, loratadine, and glucose gel. Onset is slower than IM or IV — takes time to pass through the gut.'},
+  {cat:'routes',term:'SL — Sublingual',short:'Dissolved or sprayed under the tongue',def:'Drug is sprayed or placed under the tongue where it is absorbed through the mucous membrane directly into the bloodstream — bypassing the digestive system. Faster onset than swallowing. GTN is given sublingually. The rich blood supply under the tongue makes absorption rapid — effects felt within minutes.'},
+  {cat:'routes',term:'IN — Intranasal',short:'Sprayed into the nose',def:'Drug is sprayed into the nasal cavity and absorbed through the nasal mucosa into the bloodstream. Good absorption and fast onset — useful when IV access is unavailable. Used for fentanyl. Alternate nostrils with each spray to maximise absorption area. Contraindicated if nasal passages are blocked or bleeding.'},
+  {cat:'routes',term:'NEB — Nebulised',short:'Turned into a mist and breathed in',def:'A nebuliser machine converts liquid drug into a fine aerosol mist breathed through a mask or mouthpiece. Delivers drug directly to the airways — ideal for bronchospasm. Used for salbutamol and ipratropium bromide (always together for severe asthma). Takes 5–10 minutes to deliver a full dose.'},
+  {cat:'routes',term:'MDI — Metered Dose Inhaler',short:'Pressurised puffer inhaler',def:'A pressurised canister that delivers a fixed measured dose of drug with each press. Always used with a spacer for best effect — the spacer holds the drug cloud so the patient can inhale it fully rather than it hitting the back of the throat. Used for salbutamol: 4–12 puffs as clinically indicated.'},
+  {cat:'routes',term:'IH — Inhaled',short:'Breathed in through the mouth',def:'The patient breathes the vapour or gas in through the mouth. For methoxyflurane, the patient holds the Penthrox inhaler (green whistle) to their mouth and breathes normally. Self-administered. The drug is absorbed through the lungs directly into the bloodstream — onset within seconds of first breath.'},
+  {cat:'routes',term:'Buccal',short:'Absorbed through the inside of the cheek',def:'Drug is placed or rubbed inside the cheek where it is absorbed through the buccal mucosa. Used for glucose gel when a patient is too drowsy to swallow safely but still has a protected airway. Also used for midazolam wafer form. Avoids aspiration risk compared to asking an impaired patient to swallow.'},
+  {cat:'routes',term:'PRN',short:'As needed — give when required',def:'From the Latin "pro re nata." Given when required rather than on a fixed schedule. For ondansetron, PRN means you give it when the patient has nausea or vomiting — not routinely to every patient. Does NOT mean unlimited. There are still dose limits: max 2 doses of ondansetron with 8 hours between sessions.'},
+
+  {cat:'drug-types',term:'Vasodilator',short:'Drug that widens blood vessels',def:'Relaxes smooth muscle in blood vessel walls, causing them to widen. This lowers blood pressure and reduces the work the heart has to do. GTN is a vasodilator — it reduces both preload (blood returning to the heart) and afterload (resistance the heart pumps against), relieving strain on a failing or ischaemic heart.'},
+  {cat:'drug-types',term:'Antiplatelet',short:'Prevents blood clot formation by stopping platelets clumping',def:'Stops platelets (tiny blood cells) from sticking together to form clots. Aspirin irreversibly inhibits the COX-1 enzyme that platelets need to aggregate. In ACS, a clot is partially or fully blocking a coronary artery — aspirin prevents the clot from growing larger while the patient is transported.'},
+  {cat:'drug-types',term:'Antihistamine',short:'Blocks the chemical causing allergic symptoms',def:'Blocks H1 histamine receptors, preventing histamine from triggering itching, swelling and redness. Loratadine is a second-generation (non-sedating) antihistamine — it does not cross the blood-brain barrier easily, so it causes far less drowsiness than older antihistamines like promethazine.'},
+  {cat:'drug-types',term:'Bronchodilator',short:'Drug that opens up the airways',def:'Relaxes the smooth muscle around the bronchioles, causing them to widen and allowing more air to flow in and out. Salbutamol and ipratropium bromide are both bronchodilators but work through completely different mechanisms — which is exactly why they are combined in severe asthma for a synergistic effect.'},
+  {cat:'drug-types',term:'Beta-2 Agonist',short:'Bronchodilator that stimulates airway receptors',def:'Binds to beta-2 adrenergic receptors in airway smooth muscle, causing relaxation and dilation. Salbutamol is a selective beta-2 agonist. It slightly cross-stimulates beta-1 receptors in the heart, which causes the common side effect of tachycardia. Monitor HR during and after administration.'},
+  {cat:'drug-types',term:'Anticholinergic',short:'Blocks nerve signals that tighten airways',def:'Blocks muscarinic acetylcholine receptors. In the airway, this prevents the vagus nerve from triggering bronchoconstriction and excess mucus secretion. Ipratropium bromide works this way — it complements salbutamol\'s beta-2 mechanism, which is why they must always be co-administered, never used alone.'},
+  {cat:'drug-types',term:'Benzodiazepine',short:'Sedative drug class that calms the nervous system',def:'Enhances GABA — the brain\'s main inhibitory neurotransmitter — reducing seizure activity, anxiety, and agitation. Midazolam is a benzodiazepine. Key risk is respiratory depression — the drug can slow or stop breathing, especially at higher doses or in elderly and frail patients. Always have airway equipment ready.'},
+  {cat:'drug-types',term:'Opioid Analgesic',short:'Strong painkiller acting on opioid receptors',def:'Binds to opioid receptors in the brain and spinal cord, blocking pain signals and causing analgesia and sedation. Fentanyl is a potent synthetic opioid — far stronger than morphine per milligram but shorter-acting. Key risks include respiratory depression, nausea, and hypotension. Monitor closely.'},
+  {cat:'drug-types',term:'Antiemetic',short:'Drug that stops nausea and vomiting',def:'Prevents or treats nausea and vomiting by blocking receptors that trigger the vomiting reflex. Ondansetron is an antiemetic used both to treat active vomiting and prophylactically (to prevent vomiting in eye and spinal injuries where vomiting could worsen the injury by raising intra-ocular or spinal pressure).'},
+  {cat:'drug-types',term:'5-HT3 Antagonist',short:'The mechanism by which ondansetron works',def:'5-HT3 receptors are serotonin receptors found in the gut and the brain\'s vomiting centre. When activated by serotonin (released during gut irritation or injury) they trigger nausea and vomiting. Ondansetron blocks these receptors specifically, preventing the signal. This is its precise mechanism of action.'},
+  {cat:'drug-types',term:'Local Anaesthetic',short:'Drug that numbs a specific area',def:'Blocks sodium channels in nerve fibres, preventing pain signals from being transmitted from that area to the brain. The patient stays fully conscious but cannot feel pain in the affected area. Lignocaine in Cophenylcaine is applied topically to wounds and the nasal cavity to provide local pain relief.'},
+  {cat:'drug-types',term:'Vasoconstrictor',short:'Drug that narrows blood vessels',def:'Causes smooth muscle in blood vessel walls to contract, narrowing the vessel and reducing blood flow to that area. Phenylephrine in Cophenylcaine constricts blood vessels in the nose — reducing bleeding in epistaxis. It also helps prolong the local anaesthetic effect by keeping lignocaine localised rather than washing away.'},
+
+  {cat:'contra',term:'Hypersensitivity',short:'Allergic or adverse reaction to a specific drug',def:'An abnormal immune response to a substance that most people tolerate safely. Ranges from a mild rash (mild hypersensitivity) all the way to anaphylaxis (severe hypersensitivity). If a patient reports a known hypersensitivity to any drug, giving it is contraindicated — you must find an alternative.'},
+  {cat:'contra',term:'Contraindicated',short:'Must not give — a hard clinical stop',def:'A condition or factor that makes a particular drug inadvisable and means you do not administer it. Not a suggestion or a precaution — a hard rule. Unlike a caution (where you proceed with extra care), a contraindication means stop. Document it, find an alternative, and consult if needed.'},
+  {cat:'contra',term:'PDE5 Inhibitors',short:'Drugs that interact fatally with GTN',def:'Block phosphodiesterase-5, an enzyme that degrades cGMP — a chemical that relaxes blood vessels. Includes Sildenafil (Viagra), Tadalafil (Cialis), Avanafil (Spedra), and Riociguat (Adempas). Combined with GTN, both drugs cause extreme vasodilation simultaneously — blood pressure can crash fatally. Always ask before giving GTN.'},
+  {cat:'contra',term:'Apomorphine Interaction',short:'Why apomorphine + ondansetron is dangerous',def:'Apomorphine is a dopamine agonist used to treat Parkinson\'s disease. When combined with ondansetron it causes a severe, sudden drop in blood pressure and can cause loss of consciousness. This interaction is well-documented and is an absolute contraindication for ondansetron — always check the patient\'s full medication list.'},
+  {cat:'contra',term:'Respiratory Depression',short:'Drug slows or stops breathing',def:'A reduction in rate, depth, or effectiveness of breathing caused by a drug suppressing the respiratory centre in the brainstem. Key risk with opioids (fentanyl) and benzodiazepines (midazolam). In severe cases breathing can stop entirely. Always have a BVM and suction ready when giving these drugs.'},
+  {cat:'contra',term:'Hepatotoxicity',short:'Drug damage to the liver',def:'Toxic damage to liver cells caused by a drug or its metabolites. Paracetamol is hepatotoxic in overdose — when too much is taken the liver\'s normal processing pathway is overwhelmed and a toxic byproduct (NAPQI) accumulates, destroying liver cells. Always ask if the patient has already taken paracetamol before giving more.'},
+  {cat:'contra',term:'Nephrotoxicity',short:'Drug damage to the kidneys',def:'Toxic damage to kidney cells or function caused by a drug. Methoxyflurane is nephrotoxic in high doses — fluoride ions released during its metabolism can damage kidney tubule cells. This is why strict limits apply: maximum 6ml per day and 15ml per week. Exceeding these limits risks permanent kidney damage.'},
+
+  {cat:'other',term:'Multimodal Analgesia',short:'Using multiple types of pain relief together',def:'Using two or more pain relief agents that work through different mechanisms simultaneously. For example paracetamol (central) + fentanyl (opioid) + methoxyflurane (inhaled). Each drug targets a different part of the pain pathway, giving better overall relief at lower individual doses — reducing side effects of each drug.'},
+  {cat:'other',term:'Prophylaxis',short:'Prevention — giving treatment before a problem starts',def:'Giving a drug or treatment to prevent something from happening rather than treating it after it occurs. Ondansetron prophylaxis for eye and spinal injuries means giving it before vomiting starts — because vomiting raises intra-ocular or spinal pressure and can significantly worsen the underlying injury.'},
+  {cat:'other',term:'Reconstitute',short:'Mixing a powder drug with liquid before use',def:'Some drugs are stored as a dry powder because they are unstable in liquid form. Before use they must be mixed with a sterile liquid (diluent) provided in the kit to create an injectable solution. Glucagon must be reconstituted this way. Always check the solution is clear and free of particles before injecting.'},
+  {cat:'other',term:'Preload',short:'Amount of blood filling the heart before it pumps',def:'The volume of blood stretching the heart\'s ventricles at the end of filling, just before the heart beats. High preload means the heart is overfull and has to work harder. GTN reduces preload by dilating veins, so blood pools in the periphery and less returns to the heart — relieving a failing heart.'},
+  {cat:'other',term:'Afterload',short:'Resistance the heart pumps blood against',def:'The pressure the left ventricle must overcome to eject blood into the aorta. High afterload (high blood pressure) makes the heart work much harder. GTN reduces afterload by dilating arteries. Reducing both preload and afterload significantly eases the strain on a heart that is failing or ischaemic.'},
+  {cat:'other',term:'Glycogenolysis',short:'The liver breaking stored sugar into glucose',def:'The process glucagon triggers in the liver — breaking stored glycogen down into glucose molecules and releasing them into the bloodstream to raise blood sugar. This is how glucagon treats hypoglycaemia. It only works if the liver has glycogen stores — it is ineffective in starved, malnourished, or chronic alcohol-dependent patients.'},
+  {cat:'other',term:'ROSC',short:'Return of Spontaneous Circulation',def:'The moment a patient in cardiac arrest starts producing their own heartbeat again without CPR. It is the goal of resuscitation. Clinically recognised by a palpable central pulse, a sudden rise in ETCO2 to 35–40mmHg, rising SpO2, and sometimes movement or breathing. Post-ROSC care is critical — re-arrest risk is high.'},
+  {cat:'other',term:'ASMA Authority / STORC',short:'Approval processes for high-risk drug combinations',def:'ASMA (Ambulance Service Medical Authority) must provide authority before a paramedic uses midazolam for sedation after ketamine in a non-pregnant patient. STORC is a clinical consultation line used when the patient is pregnant. Both are safety checkpoints adding medical oversight to high-risk drug decisions.'},
+  {cat:'other',term:'Glycogen',short:'The liver\'s stored form of glucose',def:'Glucose molecules linked together into a large storage molecule in the liver and muscles. When blood sugar drops, the liver breaks glycogen back into glucose (glycogenolysis) and releases it into the blood. Glucagon stimulates this process. If stores are empty — as in starvation or chronic alcohol use — glucagon cannot raise blood sugar.'},
+];
+const FRAMEWORKS=[
+  // ── IMISTAMBO ──
+  {type:'fw',mnemonic:'IMISTAMBO',letter:'Overview',color:'blue',
+   q:'What does IMISTAMBO stand for and when do you use it?',
+   a:'IMISTAMBO is the paramedic patient history framework. Used during every patient assessment to ensure a thorough and systematic history is taken.\n\nI — Identify / Introduction\nM — Mechanism / Medical complaint\nI — Interventions (prior)\nS — Signs & Symptoms\nT — Treatment (current medications)\nA — Allergies\nM — Medical history (past)\nB — Background / social history\nO — Other (anything else relevant)'},
+  {type:'fw',mnemonic:'IMISTAMBO',letter:'I — Identify',color:'blue',
+   q:'IMISTAMBO — I: What do you do in the Identify/Introduction step?',
+   a:'Introduce yourself to the patient.\nConfirm the patient\'s name and date of birth.\nEstablish rapport and gain consent to treat.\nIdentify any immediate life threats before proceeding.\n\nExample questions:\n"Hi, my name is [name], I\'m a paramedic. Can I get your name and date of birth? Can you tell me what\'s happened today?"'},
+  {type:'fw',mnemonic:'IMISTAMBO',letter:'M — Mechanism/Complaint',color:'blue',
+   q:'IMISTAMBO — M: What does Mechanism/Medical complaint cover?',
+   a:'For trauma: establish the mechanism of injury — what happened? How much force? What direction? Was there a fall, crush, impact, penetration?\n\nFor medical: establish the chief complaint — what is the main problem bringing you to call? When did it start? Did it come on suddenly or gradually?\n\nExample:\n"What happened today?"\n"How did the injury occur?"\n"When did you first notice this problem?"'},
+  {type:'fw',mnemonic:'IMISTAMBO',letter:'I — Interventions',color:'blue',
+   q:'IMISTAMBO — I: What does Interventions cover?',
+   a:'What has already been done for the patient BEFORE you arrived?\n\n• Did bystanders do anything — CPR, first aid, pressure?\n• Did the patient take any medications for this problem?\n• Did anyone else treat them (GP, nurse, another unit)?\n• Has the patient tried anything themselves — ice, heat, rest?\n\nThis affects your assessment and management — e.g. if aspirin has already been given, do not double dose.'},
+  {type:'fw',mnemonic:'IMISTAMBO',letter:'S — Signs & Symptoms',color:'blue',
+   q:'IMISTAMBO — S: What does Signs & Symptoms cover? Use QPORST to expand.',
+   a:'Signs = what you can OBSERVE and MEASURE (vitals, rash, pallor, diaphoresis, SpO2 reading)\nSymptoms = what the patient TELLS YOU they feel (pain, nausea, dizziness)\n\nExpand each symptom using QPORST:\nQ — Quality\nP — Provocation/Palliation\nO — Onset\nR — Region/Radiation\nS — Severity\nT — Time/Timing\n\nDo not skip this step — symptoms drive your differential diagnosis.'},
+  {type:'fw',mnemonic:'IMISTAMBO',letter:'T — Treatment/Medications',color:'blue',
+   q:'IMISTAMBO — T: What does Treatment/Medications cover?',
+   a:'What medications does the patient currently take?\n\n• Prescription medications (ask to see the box or Webster pack)\n• Over-the-counter medications (paracetamol, aspirin, antihistamines)\n• Supplements and herbal remedies\n• Recent medications taken today\n\nCritical questions:\n• "Do you take any blood thinners?" (affects bleeding risk)\n• "Do you take Viagra/Cialis/Spedra?" (GTN contraindication)\n• "Do you take apomorphine?" (ondansetron contraindication)\n• "Have you taken paracetamol today?" (dosing safety)'},
+  {type:'fw',mnemonic:'IMISTAMBO',letter:'A — Allergies',color:'blue',
+   q:'IMISTAMBO — A: What does Allergies cover and what do you need to establish?',
+   a:'Does the patient have any known allergies — especially to drugs?\n\nFor every allergy, establish:\n1. What are they allergic to?\n2. What reaction did they have? (rash vs anaphylaxis — very different)\n3. When did the reaction occur?\n\nMost critical allergies for your drug list:\n• Aspirin/NSAIDs/salicylates (aspirin)\n• Penicillin/antibiotics (document but less relevant prehospital)\n• Latex\n• Any anaesthetic agents (methoxyflurane)\n• Fentanyl or other opioids\n\nAlways ask before giving any drug.'},
+  {type:'fw',mnemonic:'IMISTAMBO',letter:'M — Medical History',color:'blue',
+   q:'IMISTAMBO — M: What does past Medical History cover?',
+   a:'What relevant medical conditions does the patient have?\n\n• Cardiac history (angina, heart attack, heart failure, arrhythmias)\n• Respiratory (asthma, COPD, emphysema)\n• Diabetes (type 1 or 2 — affects BGL management)\n• Neurological (seizure disorder, stroke, spinal injury — affects GTN and ondansetron)\n• Renal or hepatic disease (affects drug metabolism)\n• Pregnancy (contraindication for cophenylcaine and many drugs)\n• Spinal cord injury (relevant for autonomic dysreflexia and GTN)\n• Phaeochromocytoma/insulinoma/glucagonoma (glucagon contraindications)'},
+  {type:'fw',mnemonic:'IMISTAMBO',letter:'B — Background',color:'blue',
+   q:'IMISTAMBO — B: What does Background/social history cover?',
+   a:'Contextual information that affects your clinical picture:\n\n• Living situation — does the patient live alone? Who is with them?\n• Occupation — relevant for mechanism of injury, hazardous exposures\n• Alcohol and drug use — affects drug choices (methoxyflurane contraindicated with alcohol; affects GCS interpretation)\n• Smoking history — relevant for respiratory presentations\n• Recent travel — infectious disease, Irukandji (North Queensland)\n• Functional baseline — is this normal for them? What is their usual GCS?\n• Support at home — is it safe to leave them?'},
+  {type:'fw',mnemonic:'IMISTAMBO',letter:'O — Other',color:'blue',
+   q:'IMISTAMBO — O: What does Other cover?',
+   a:'Anything else that is relevant that has not been captured above.\n\n• "Is there anything else you want to tell me?"\n• "Is there anything I should know?"\n• Recent procedures, surgeries, hospitalisations\n• GP contact details\n• Advance care directives or resuscitation plans\n• Patient or family concerns\n• Anything that does not fit neatly into the other categories\n\nThis is your catch-all — give the patient and family the opportunity to add anything they feel is important.'},
+
+  // ── QPORST ──
+  {type:'fw',mnemonic:'QPORST',letter:'Overview',color:'green',
+   q:'What does QPORST stand for and when do you use it?',
+   a:'QPORST is used to systematically characterise a patient\'s symptom — particularly pain or discomfort. Use it within the Signs & Symptoms step of IMISTAMBO.\n\nQ — Quality (what does it feel like?)\nP — Provocation / Palliation (what makes it better or worse?)\nO — Onset (when did it start? sudden or gradual?)\nR — Region / Radiation (where is it? does it spread?)\nS — Severity (score out of 10)\nT — Time / Timing (how long? constant or comes and goes?)'},
+  {type:'fw',mnemonic:'QPORST',letter:'Q — Quality',color:'green',
+   q:'QPORST — Q: What is Quality and how do you ask about it?',
+   a:'What does the symptom feel like in the patient\'s own words?\n\nAsk: "Can you describe the pain/feeling for me?"\n\nCommon descriptors and what they suggest:\n• Crushing / squeezing / pressure → cardiac (ACS)\n• Sharp / stabbing → pleuritic, pneumothorax, musculoskeletal\n• Burning → gastric, oesophageal, skin\n• Tearing / ripping → aortic dissection\n• Dull / aching → visceral, musculoskeletal\n• Tight / constricting → bronchospasm, angina\n• Throbbing → vascular, migraine\n\nLet the patient describe it first — do not suggest words.'},
+  {type:'fw',mnemonic:'QPORST',letter:'P — Provocation/Palliation',color:'green',
+   q:'QPORST — P: What is Provocation/Palliation and what do you ask?',
+   a:'What makes the symptom WORSE (provocation) or BETTER (palliation)?\n\nAsk: "Does anything make it better or worse?"\n"Did anything bring it on?"\n\nKey clinical relevance:\n• Pain worse on breathing → pleuritic (pneumothorax, PE, rib fracture)\n• Pain worse on palpation → musculoskeletal, peritonitis\n• Pain relieved by GTN → suggests cardiac origin\n• Pain NOT relieved by rest → unstable angina / ACS (more concerning)\n• Pain relieved by leaning forward → pericarditis\n• Pain worse lying flat → cardiac failure, GORD\n• Pain after eating → gastric cause'},
+  {type:'fw',mnemonic:'QPORST',letter:'O — Onset',color:'green',
+   q:'QPORST — O: What is Onset and why does it matter?',
+   a:'When did the symptom start and how did it begin?\n\nAsk: "When exactly did this start?"\n"Did it come on suddenly or gradually?"\n"What were you doing when it started?"\n\nClinical significance:\n• Sudden / instantaneous onset → aortic dissection, subarachnoid haemorrhage ("thunderclap"), PE, pneumothorax\n• Gradual onset over hours → infection, inflammation, cardiac failure\n• Onset at rest → more concerning for cardiac cause (unstable angina/ACS)\n• Onset during exercise → cardiac ischaemia, musculoskeletal\n• Onset after eating / drinking → gastric, allergic\n• Seizure timing: note exact time of onset — critical for midazolam (treat if ≥5 minutes)'},
+  {type:'fw',mnemonic:'QPORST',letter:'R — Region/Radiation',color:'green',
+   q:'QPORST — R: What is Region/Radiation and what patterns matter?',
+   a:'WHERE is the symptom and does it SPREAD anywhere?\n\nAsk: "Can you point to where it is?"\n"Does it go anywhere else?"\n\nKey radiation patterns:\n• Central chest → left arm / jaw → ACS (classic)\n• Central chest → back (tearing) → aortic dissection\n• Chest → shoulder tip → diaphragmatic irritation (blood, ectopic pregnancy)\n• Loin to groin → renal colic (ureteric stone)\n• Epigastric → back → pancreatitis\n• Headache → neck stiffness → meningitis / SAH\n\nNote: Not all ACS radiates — many present with central chest pain only. Atypical presentations are common in women, elderly, and diabetics.'},
+  {type:'fw',mnemonic:'QPORST',letter:'S — Severity',color:'green',
+   q:'QPORST — S: What is Severity and how do you score it?',
+   a:'How severe is the symptom — usually rated on a Numeric Rating Scale (NRS).\n\nAsk: "On a scale of 0 to 10, where 0 is no pain and 10 is the worst pain imaginable, what would you score it right now?"\n\nClinical use:\n• Score at initial assessment and REASSESS after treatment\n• Documents response to analgesia\n• Guides escalation of pain management\n• For children: use FACES scale (0–5 faces expressing pain)\n• For altered patients: use behavioural cues (grimacing, guarding, crying)\n\nImportant: A high pain score alone does not determine drug choice — always assess the whole clinical picture.'},
+  {type:'fw',mnemonic:'QPORST',letter:'T — Time/Timing',color:'green',
+   q:'QPORST — T: What is Time/Timing and what do you assess?',
+   a:'How long has the symptom been present and is it constant or intermittent?\n\nAsk: "How long have you had this?"\n"Is it constant or does it come and go?"\n"Has this happened before?"\n\nClinical significance:\n• Constant pain → more likely serious pathology\n• Intermittent / colicky → renal colic, bowel obstruction, biliary colic\n• Episodic chest pain → angina vs ACS (at rest = ACS until proven otherwise)\n• Seizure duration: timing is CRITICAL — midazolam indicated at 5 minutes\n• Symptom duration affects drug timing windows (e.g. GTN — has patient already had doses today?)'},
+
+  // ── DRS ABCDE ──
+  {type:'fw',mnemonic:'DRS ABCDE',letter:'Overview',color:'danger',
+   q:'What is DRS ABCDE and when do you use it?',
+   a:'DRS ABCDE is the primary survey framework. Used FIRST on every patient to rapidly identify and manage life-threatening problems in order of priority.\n\nD — Danger\nR — Response\nS — Send for help\nA — Airway\nB — Breathing\nC — Circulation\nD — Disability\nE — Exposure/Environment\n\nWork through in order — correct each problem as you find it before moving on. Do not proceed to B if the airway is compromised.'},
+  {type:'fw',mnemonic:'DRS ABCDE',letter:'D — Danger',color:'danger',
+   q:'DRS ABCDE — D: What do you assess for Danger?',
+   a:'Before approaching ANY patient — ensure the scene is safe for you, your crew, bystanders, and the patient.\n\nCheck for:\n• Traffic / moving vehicles\n• Fire, smoke, fumes, toxic substances\n• Electricity / downed power lines\n• Unstable structures (collapsed buildings, vehicles)\n• Weapons or aggression\n• Biological hazards (bodily fluids, infectious disease)\n• Environmental hazards (water, heights, darkness)\n\nRule: Do NOT become a second patient. If the scene is unsafe — wait for appropriate resources (police, fire) before entering.\n\nNote: Danger assessment is ONGOING — scenes can change.'},
+  {type:'fw',mnemonic:'DRS ABCDE',letter:'R — Response',color:'danger',
+   q:'DRS ABCDE — R: How do you assess Response?',
+   a:'Assess the patient\'s level of consciousness rapidly.\n\nMethod — AVPU scale:\nA — Alert (awake, eyes open spontaneously, responds normally)\nV — Voice (responds to verbal stimulus)\nP — Pain (responds to painful stimulus — sternal rub, trapezius squeeze)\nU — Unresponsive (no response to any stimulus)\n\nIf UNRESPONSIVE:\n→ Check for normal breathing\n→ Check carotid pulse\n→ If absent — cardiac arrest → DRS → CPR\n\nAlso use GCS for detailed neurological assessment after primary survey.'},
+  {type:'fw',mnemonic:'DRS ABCDE',letter:'S — Send for Help',color:'danger',
+   q:'DRS ABCDE — S: What does Send for Help mean?',
+   a:'Ensure appropriate help has been activated before continuing assessment.\n\n• Call for backup / additional resources if needed\n• Activate AED if cardiac arrest suspected\n• Request police if scene is unsafe\n• Request air ambulance if remote location or critical patient\n• Delegate tasks to bystanders ("You — call 000. You — get the AED.")\n• Notify receiving hospital early for time-critical patients (STEMI, stroke, trauma)\n\nDo this EARLY — help takes time to arrive. Do not wait until you are overwhelmed.'},
+  {type:'fw',mnemonic:'DRS ABCDE',letter:'A — Airway',color:'danger',
+   q:'DRS ABCDE — A: How do you assess and manage the Airway?',
+   a:'Is the airway open, maintainable, or at risk?\n\nLook / Listen / Feel:\n• Look for chest rise, foreign bodies, blood, vomit, swelling, trauma\n• Listen for stridor (partial obstruction), gurgling (fluid), snoring (tongue)\n• Feel for air movement at mouth/nose\n\nManagement:\n• Conscious patient — sit up, position of comfort\n• Unconscious — head tilt-chin lift (no C-spine concern) or jaw thrust\n• Suction if fluid present\n• OPA / NPA if maintainable\n• Recovery position if breathing but unconscious\n• Vomiting risk — have suction READY before giving sedatives/opioids\n\nThe airway is PRIORITY ONE — nothing else matters if it is not managed.'},
+  {type:'fw',mnemonic:'DRS ABCDE',letter:'B — Breathing',color:'danger',
+   q:'DRS ABCDE — B: How do you assess and manage Breathing?',
+   a:'Is the patient breathing adequately?\n\nAssess:\n• Respiratory rate (normal adult 12–20/min)\n• Depth and effort — is the patient working hard?\n• Symmetry of chest rise\n• SpO2\n• Auscultate: equal air entry? wheeze? crackles? absent?\n• Look for accessory muscle use, tracheal deviation, flail segment\n• ETCO2 if intubated\n\nManagement:\n• O2 therapy — titrate to SpO2 94–98% (88–92% for COPD)\n• BVM ventilation if breathing inadequate\n• Salbutamol / ipratropium for bronchospasm\n• Consider tension pneumothorax if absent breath sounds + haemodynamic compromise\n• Position — sitting up for respiratory distress'},
+  {type:'fw',mnemonic:'DRS ABCDE',letter:'C — Circulation',color:'danger',
+   q:'DRS ABCDE — C: How do you assess and manage Circulation?',
+   a:'Is the patient haemodynamically stable? Is there major haemorrhage?\n\nAssess:\n• Pulse — rate, rhythm, strength\n• Blood pressure\n• Skin — colour (pallor, cyanosis, mottling), temperature, moisture (diaphoresis)\n• Capillary refill time (normal <2 seconds)\n• Major external haemorrhage\n• Signs of shock\n\nManagement:\n• Stop major bleeding — direct pressure, tourniquet\n• IV access\n• Position — supine for hypotension, sitting up for APO\n• GTN for cardiac chest pain / APO (if BP >90mmHg)\n• Adrenaline for anaphylaxis\n• 12-lead ECG for cardiac presentations'},
+  {type:'fw',mnemonic:'DRS ABCDE',letter:'D — Disability',color:'danger',
+   q:'DRS ABCDE — D: How do you assess Disability (neurological)?',
+   a:'What is the patient\'s neurological status?\n\nAssess:\n• GCS — Eyes (1–4), Verbal (1–5), Motor (1–6) — document each component\n• AVPU if rapid assessment needed\n• Pupils — size, equality, reactivity (PERRL)\n• BGL — check in ALL altered conscious states\n• Limb movement and sensation\n• Signs of stroke — facial droop, arm drift, speech (FAST or BE-FAST)\n• Seizure activity — type, duration, post-ictal state\n\nBGL is MANDATORY in every altered patient — hypoglycaemia mimics almost every neurological emergency. Check before assuming cause.'},
+  {type:'fw',mnemonic:'DRS ABCDE',letter:'E — Exposure/Environment',color:'danger',
+   q:'DRS ABCDE — E: What does Exposure/Environment involve?',
+   a:'Expose the patient to find injuries or clues not yet identified — while maintaining dignity and preventing hypothermia.\n\nFor trauma:\n• Full body inspection — front and back, head to toe\n• Log roll to inspect posterior surface\n• Look for hidden bleeding, penetrating injuries, bruising, deformity\n• Feel for crepitus, instability\n\nFor medical:\n• Look for rashes (anaphylaxis, meningococcal), medical alert bracelets, implanted devices\n• Check temperature — hypothermia or fever\n• Check for needle track marks, signs of self-harm\n• Environmental clues — medications, alcohol bottles, substances\n\nAlways cover the patient after inspection — prevent heat loss.'},
+
+  // ── SAMPLE ──
+  {type:'fw',mnemonic:'SAMPLE',letter:'Overview',color:'purple',
+   q:'What does SAMPLE stand for and when do you use it?',
+   a:'SAMPLE is an alternative history-taking framework to IMISTAMBO. Both cover similar ground — SAMPLE is shorter and sometimes used for rapid history in time-critical situations.\n\nS — Signs & Symptoms\nA — Allergies\nM — Medications\nP — Pertinent past medical history\nL — Last oral intake\nE — Events leading up to the incident\n\nUsed in: trauma, rapid medical assessments, handover summaries. IMISTAMBO is more comprehensive for paramedic assessments.'},
+  {type:'fw',mnemonic:'SAMPLE',letter:'S — Signs & Symptoms',color:'purple',
+   q:'SAMPLE — S: Signs & Symptoms',
+   a:'What is the patient\'s chief complaint and associated symptoms?\n\nSigns = what you observe and measure (vitals, SpO2, skin colour, rash)\nSymptoms = what the patient reports (pain, nausea, dizziness, shortness of breath)\n\nExpand using QPORST for any significant symptom.\n\nAsk: "What is the main problem today?"\n"What symptoms are you experiencing?"'},
+  {type:'fw',mnemonic:'SAMPLE',letter:'A — Allergies',color:'purple',
+   q:'SAMPLE — A: Allergies',
+   a:'Does the patient have any known allergies?\n\nAsk: "Are you allergic to anything — especially medications?"\n\nFor each allergy establish:\n• What substance\n• What reaction (rash vs anaphylaxis — severity matters)\n• When it occurred\n\nDocument clearly — affects every drug you consider giving.'},
+  {type:'fw',mnemonic:'SAMPLE',letter:'M — Medications',color:'purple',
+   q:'SAMPLE — M: Medications — what are the critical questions?',
+   a:'What medications does the patient currently take?\n\nAsk to see the medication list, Webster pack, or boxes.\n\nCritical drug interactions for your scope:\n• Sildenafil/Tadalafil/Avanafil → GTN contraindicated\n• Apomorphine → Ondansetron contraindicated\n• Blood thinners (warfarin, rivaroxaban) → bleeding risk\n• Insulin/metformin → context for BGL\n• Antihypertensives → may affect BP response\n• Seizure medications → compliance? Recent change?\n\nAlso ask: "Have you taken anything for this today?"'},
+  {type:'fw',mnemonic:'SAMPLE',letter:'P — Past Medical History',color:'purple',
+   q:'SAMPLE — P: Pertinent past medical history',
+   a:'What relevant medical conditions does the patient have?\n\nAsk: "Do you have any medical conditions?"\n"Have you ever been admitted to hospital for this?"\n\nKey conditions affecting your management:\n• Cardiac disease → ACS risk, GTN considerations\n• Diabetes → BGL interpretation\n• Asthma/COPD → drug choices, O2 targets\n• Epilepsy → seizure baseline, medication compliance\n• Spinal injury → autonomic dysreflexia risk with GTN\n• Pregnancy → contraindications (cophenylcaine, many drugs)\n• Phaeochromocytoma/insulinoma → glucagon contraindicated'},
+  {type:'fw',mnemonic:'SAMPLE',letter:'L — Last Oral Intake',color:'purple',
+   q:'SAMPLE — L: Last oral intake — why does this matter prehospital?',
+   a:'When did the patient last eat or drink?\n\nAsk: "When did you last eat or drink anything?"\n"Have you had anything today?"\n\nClinical relevance:\n• Airway risk: Full stomach increases vomiting/aspiration risk during airway procedures\n• Hypoglycaemia: Not eating explains low BGL — glucagon less effective if starved (glycogen stores depleted)\n• Diabetics: missed meals + insulin = hypoglycaemia\n• Surgical handover: hospital needs to know for anaesthetic planning\n• Overdose: affects absorption of oral toxins\n• Alcohol: last drink — affects clinical picture'},
+  {type:'fw',mnemonic:'SAMPLE',letter:'E — Events',color:'purple',
+   q:'SAMPLE — E: Events leading up to the incident',
+   a:'What was the patient doing immediately before this happened? What is the context?\n\nAsk: "What were you doing when this started?"\n"Has anything like this happened before?"\n"Is there anything that might have caused this?"\n\nExamples:\n• Chest pain after exertion → ACS vs musculoskeletal\n• Collapse after standing quickly → postural hypotension\n• Seizure → first time or known epileptic? medication change?\n• Unconsciousness → found by whom? how long down?\n• Injury → how did it happen? what hit what?\n• Allergic reaction → what was the patient exposed to?'},
+
+  // ── FAST / BE-FAST ──
+  {type:'fw',mnemonic:'BE-FAST',letter:'Overview',color:'warn',
+   q:'What is BE-FAST and when do you use it?',
+   a:'BE-FAST is the stroke recognition tool used to rapidly identify signs of a stroke and activate the stroke pathway.\n\nB — Balance (sudden loss of balance or coordination)\nE — Eyes (sudden vision changes — blurred, double, loss)\nF — Face (facial droop — ask patient to smile)\nA — Arms (arm weakness or drift — ask patient to raise both arms)\nS — Speech (slurred, confused, unable to speak or understand)\nT — Time (note time of symptom onset immediately — critical for thrombolysis window)\n\nIf ANY are positive → treat as stroke → urgent transport → pre-notify hospital.'},
+  {type:'fw',mnemonic:'BE-FAST',letter:'B — Balance',color:'warn',
+   q:'BE-FAST — B: Balance — what do you look for?',
+   a:'Sudden onset of problems with balance, coordination, or walking that is new and unexplained.\n\nAsk: "Did you suddenly feel unsteady?"\n"Are you having trouble walking?"\n\nObserve: unsteady gait, falling to one side, inability to stand\n\nDistinguish from:\n• Alcohol intoxication (gradual, smell, history)\n• Hypoglycaemia (check BGL — mimics stroke)\n• Vertigo (spinning sensation, nausea, ear symptoms)\n\nNote: Always check BGL before assuming stroke — hypoglycaemia is the great mimic.'},
+  {type:'fw',mnemonic:'BE-FAST',letter:'E — Eyes',color:'warn',
+   q:'BE-FAST — E: Eyes — what visual changes suggest stroke?',
+   a:'Sudden onset of visual disturbance that is new and unexplained.\n\nTypes that suggest stroke:\n• Sudden loss of vision in one or both eyes\n• Double vision (diplopia)\n• Blurred vision\n• Visual field defect (can\'t see to one side)\n\nAsk: "Have you had any sudden changes to your vision?"\n"Are you having trouble seeing?"\n\nCheck pupils: PERRL? Unequal pupils may suggest increased intracranial pressure.\n\nNot all strokes cause eye symptoms — absence does not rule out stroke.'},
+  {type:'fw',mnemonic:'BE-FAST',letter:'F — Face',color:'warn',
+   q:'BE-FAST — F: Face — how do you assess for facial droop?',
+   a:'Ask the patient to show their teeth or smile broadly.\n\nPositive if: one side of the face droops or does not move symmetrically\n\nAsk: "Can you show me your teeth / give me a big smile?"\n\nAlso observe:\n• Asymmetry at rest\n• Drooling from one side\n• Inability to close one eye fully\n\nDistinguish Bell\'s palsy (peripheral — affects entire face including forehead) from stroke (central — forehead usually spared due to bilateral cortical representation).\n\nFacial droop is one of the most recognisable stroke signs.'},
+  {type:'fw',mnemonic:'BE-FAST',letter:'A — Arms',color:'warn',
+   q:'BE-FAST — A: Arms — how do you assess arm weakness?',
+   a:'Pronator drift test — ask the patient to raise both arms to shoulder height with palms up and hold them there with eyes closed for 10 seconds.\n\nPositive if: one arm drifts downward or pronates (rotates) — indicates contralateral hemisphere damage\n\nAsk: "Can you hold both arms up like this for me?"\n\nAlso check:\n• Grip strength — equal on both sides?\n• Can patient feel you touching both hands equally?\n• Leg weakness is also common but not in the acronym — check both lower limbs too'},
+  {type:'fw',mnemonic:'BE-FAST',letter:'S — Speech',color:'warn',
+   q:'BE-FAST — S: Speech — what types of speech problems suggest stroke?',
+   a:'Ask the patient to say a test phrase: "The sky is blue in Cincinnati"\n\nTypes of speech deficit:\n• Dysarthria — slurred, difficult to articulate (motor problem with speech muscles)\n• Aphasia — cannot find words, using wrong words, jumbled speech, or cannot understand what is said to them\n• Expressive aphasia — knows what they want to say but cannot get it out\n• Receptive aphasia — cannot understand your questions\n\nAsk: "Can you repeat this phrase for me?"\n"Do you understand what I\'m saying?"\n\nAlso check: can they write their name? Read a simple sentence?'},
+  {type:'fw',mnemonic:'BE-FAST',letter:'T — Time',color:'warn',
+   q:'BE-FAST — T: Time — why is this the most critical step?',
+   a:'TIME IS BRAIN — every minute of stroke, approximately 1.9 million neurons die.\n\nThrombolysis (clot-busting drug) window: up to 4.5 hours from onset\nEndovascular thrombectomy: up to 24 hours in selected patients\n\nYou MUST establish:\n1. Exact time symptoms were first noticed\n2. If unknown: last known WELL time (when was the patient last seen acting normally?)\n3. Time of your assessment\n\nPre-notify the hospital IMMEDIATELY with time of onset — they will activate the stroke team before you arrive.\n\nDo NOT delay transport for further assessment on scene.'},
+
+  // ── PAIN ASSESSMENT ──
+  {type:'fw',mnemonic:'Pain Assessment',letter:'NRS & FACES',color:'sky',
+   q:'What pain scoring tools do paramedics use and when?',
+   a:'NUMERIC RATING SCALE (NRS) — adults and children >8 years:\n"On a scale of 0 to 10, where 0 is no pain and 10 is the worst pain you can imagine, what is your pain right now?"\n\n0 = No pain\n1–3 = Mild\n4–6 = Moderate\n7–10 = Severe\n\nFACES PAIN SCALE — children 3–8 years:\nSix faces from smiling (0) to crying (10). Ask: "Which face shows how much it hurts?"\n\nBEHAVIOURAL CUES — non-verbal / altered patients:\nGuarding, grimacing, rigid posture, crying, diaphoresis, tachycardia, elevated BP\n\nREASSESS after every intervention and document the change.'},
+
+  // ── SHOCK ──
+  {type:'fw',mnemonic:'Shock',letter:'Recognition & Types',color:'danger',
+   q:'How do you recognise shock and what are the main types?',
+   a:'SHOCK = inadequate tissue perfusion — organs not getting enough oxygenated blood\n\nUNIVERSAL SIGNS:\n• Tachycardia (compensatory)\n• Hypotension (late sign — decompensated shock)\n• Pale, cool, clammy skin (vasoconstriction)\n• Prolonged CRT >2 seconds\n• Altered mental status\n• Tachypnoea\n\nTYPES:\n• Hypovolaemic — blood/fluid loss (haemorrhage, burns, vomiting)\n• Cardiogenic — heart failure, ACS (pump failure)\n• Distributive — septic, anaphylactic, neurogenic (maldistribution)\n• Obstructive — tension pneumothorax, PE, cardiac tamponade\n\nAnaphylactic shock → Adrenaline IM\nCardiogenic shock → GTN (if BP allows) — careful fluid management'},
+
+  // ── VITAL SIGNS NORMALS ──
+  {type:'fw',mnemonic:'Vital Signs',letter:'Normal Ranges',color:'green',
+   q:'What are the normal vital sign ranges for adults, children, and infants?',
+   a:'ADULT (>12 years):\nHR: 60–100 bpm\nRR: 12–20 /min\nSystolic BP: 100–140 mmHg\nSpO2: 95–100%\nBGL: 4–8 mmol/L\nTemp: 36.5–37.5°C\n\nCHILD (1–12 years):\nHR: 70–130 bpm\nRR: 20–30 /min\nSystolic BP: 80+(age×2) mmHg\nSpO2: 95–100%\n\nINFANT (<1 year):\nHR: 100–160 bpm\nRR: 30–50 /min\nSystolic BP: 70–90 mmHg\nSpO2: 95–100%\n\nMEMO: As age decreases, HR and RR increase.'},
+
+  // ── GLASGOW COMA SCALE ──
+  {type:'fw',mnemonic:'GCS',letter:'Full Scale',color:'purple',
+   q:'What are the components and scores of the Glasgow Coma Scale?',
+   a:'GCS = Eyes + Verbal + Motor (max 15, min 3)\n\nEYES (E):\n4 — Spontaneous\n3 — To voice\n2 — To pain\n1 — None\n\nVERBAL (V):\n5 — Oriented\n4 — Confused\n3 — Words only\n2 — Sounds only\n1 — None\n\nMOTOR (M):\n6 — Obeys commands\n5 — Localises pain\n4 — Withdraws\n3 — Abnormal flexion (decorticate)\n2 — Extension (decerebrate)\n1 — None\n\nINTERPRETATION:\n15 = Normal\n13–14 = Minor impairment\n9–12 = Moderate impairment\n≤8 = Severe — consider airway protection\n3 = Completely unresponsive'},
+
+  // ── TRAUMA PRIMARY SURVEY ──
+  {type:'fw',mnemonic:'Trauma',letter:'C-ABCDE',color:'danger',
+   q:'How does trauma primary survey differ from medical? What is C-ABCDE?',
+   a:'In major trauma, CATASTROPHIC HAEMORRHAGE is addressed BEFORE airway.\n\nC — Catastrophic haemorrhage (stop life-threatening bleeding FIRST)\nA — Airway with C-spine protection\nB — Breathing\nC — Circulation\nD — Disability\nE — Exposure\n\nC-SPINE: In any significant mechanism — protect cervical spine with manual inline stabilisation until cleared.\n\nCATASTROPHIC HAEMORRHAGE:\n• Direct pressure\n• Wound packing\n• Tourniquet (limbs)\n• Pelvic binder (pelvis)\n• Time on scene: <10 minutes in penetrating trauma — scoop and run\n\nMechanism matters: high-energy mechanisms = internal injuries even without obvious external signs.'},
+
+  // ── HANDOVER ──
+  {type:'fw',mnemonic:'ISBAR',letter:'Clinical Handover',color:'sky',
+   q:'What is ISBAR and how do you use it for clinical handover?',
+   a:'ISBAR is the structured handover tool used when transferring care to hospital or another clinician.\n\nI — Identify\nWho you are, who the patient is, patient DOB\n\nS — Situation\nWhat is happening right now? Chief complaint and current status\n\nB — Background\nRelevant history, medications, allergies, events leading up\n\nA — Assessment\nYour clinical impression — what do you think is going on?\n\nR — Recommendation\nWhat do you want the receiving team to do? What is urgent?\n\nExample: "This is Oliver, paramedic. I have John Smith, 12/4/1958. He presented with crushing central chest pain at rest for 40 minutes, BP 128/82, HR 96, GCS 15. Given aspirin 300mg. I suspect ACS — I recommend urgent 12-lead review and cardiology notification."'},
+
+  // ── DECEASED DECISION ──
+  {type:'fw',mnemonic:'Obvious Death',letter:'Recognition',color:'danger',
+   q:'What are the signs of obvious death that mean CPR is not indicated?',
+   a:'Do NOT commence CPR if obvious death is present:\n\n• Decapitation\n• Hemicorporectomy (body transected)\n• Dependent lividity (pooling of blood — purple discolouration on lowest surfaces)\n• Rigor mortis (stiffening of muscles — usually 2–6 hours post death)\n• Decomposition / putrefaction\n• Injuries incompatible with life (e.g. massive head trauma with brain matter exposed)\n• Valid DNAR/Advance Care Directive in place\n\nIn all other cases of cardiac arrest — commence CPR and reassess.\n\nIf in doubt — start CPR. You can always stop; you cannot go back.'},
+];
+
+// ══════════════════════════════
+// REVISION PILE
+// ══════════════════════════════
+let revisionPile = []; // {name, set, cardRef}
+
+function addToRevision(cardRef, name, set) {
+  if (!revisionPile.find(r=>r.name===name&&r.set===set)) {
+    revisionPile.push({name,set,cardRef});
+    updateRevBadge();
+  }
+}
+function removeFromRevision(name,set) {
+  revisionPile = revisionPile.filter(r=>!(r.name===name&&r.set===set));
+  updateRevBadge();
+  renderRevPage();
+}
+function clearRevision() {
+  revisionPile=[];
+  updateRevBadge();
+  renderRevPage();
+}
+function updateRevBadge() {
+  document.getElementById('rev-badge').textContent = revisionPile.length;
+}
+
+function renderRevPage() {
+  const el = document.getElementById('rev-content');
+  const sb = document.getElementById('rev-study-btn');
+  const cb = document.getElementById('rev-clear-btn');
+  document.getElementById('rev-meta').textContent = revisionPile.length + ' card' + (revisionPile.length!==1?'s':'') + ' in revision pile';
+  if (!revisionPile.length) {
+    el.innerHTML = '<div class="rev-empty">No cards in revision pile yet.<br><br>Swipe UP on any card to add it here.</div>';
+    sb.style.display='none'; cb.style.display='none'; return;
+  }
+  const setLabels = {s1:'Set 1 — Drugs & CPR', s2:'Set 2 — Jargon', s3:'Set 3 — Frameworks'};
+  el.innerHTML = '<div class="rev-grid">'+revisionPile.map((r,i)=>`
+    <div class="rev-item">
+      <div class="rev-item-text">
+        <div class="rev-item-name">${r.name}</div>
+        <div class="rev-item-set">${setLabels[r.set]||r.set}</div>
+      </div>
+      <button class="rev-remove-btn" onclick="removeFromRevision('${r.name.replace(/'/g,"\'")}','${r.set}')">Remove</button>
+    </div>`).join('')+'</div>';
+  sb.style.display='block'; cb.style.display='block';
+}
+
+let studyingRevision = false;
+let revDeck = [], revIdx = 0, revFlipped = false;
+
+function studyRevision() {
+  if (!revisionPile.length) return;
+  studyingRevision = true;
+  revDeck = [...revisionPile];
+  revIdx = 0; revFlipped = false;
+  showSet('rev-study');
+}
+
+// ══════════════════════════════
+// PAGE NAV
+// ══════════════════════════════
+function showSet(id) {
+  document.querySelectorAll('.page,.rev-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.set-btn').forEach(b=>{ b.classList.remove('active','active-s2','active-s3'); });
+  if (id==='s1') { document.getElementById('page-s1').classList.add('active'); document.getElementById('nav-s1').classList.add('active'); }
+  else if (id==='s2') { document.getElementById('page-s2').classList.add('active'); document.getElementById('nav-s2').classList.add('active-s2'); }
+  else if (id==='s3') { document.getElementById('page-s3').classList.add('active'); document.getElementById('nav-s3').classList.add('active-s3'); }
+  else if (id==='rev-study') { document.getElementById('page-s1').classList.add('active'); renderRevStudy(); }
+}
+function showRevision() {
+  document.querySelectorAll('.page,.rev-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-rev').classList.add('active');
+  document.querySelectorAll('.set-btn').forEach(b=>b.classList.remove('active','active-s2','active-s3'));
+  renderRevPage();
+}
+
+// ══════════════════════════════
+// DECK ENGINE
+// ══════════════════════════════
+function makeDeckEngine(stageId, pbarId, lblId, pfClass, set) {
+  let deck=[], order=[], cur=0, flipped=false, shuffled=false, animating=false, mode='full', filterMode='all';
+  const stage = document.getElementById(stageId);
+
+  function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
+
+  function buildDeck(data) {
+    deck=data; order=deck.map((_,i)=>i);
+    if(shuffled) shuf(order);
+    cur=0; flipped=false;
+  }
+  function updateProg() {
+    document.getElementById(pbarId).style.width=((cur+1)/order.length*100).toFixed(1)+'%';
+    document.getElementById(lblId).textContent=(cur+1)+' / '+order.length;
+  }
+  function renderCurrent() { updateProg(); stage.innerHTML=''; stage.appendChild(makeCard(deck[order[cur]])); }
+  function move(dir) {
+    if(animating) return; animating=true; flipped=false;
+    const oldEl=stage.querySelector('.slide-card');
+    cur=(cur+dir+order.length)%order.length; updateProg();
+    const newEl=makeCard(deck[order[cur]]);
+    if(oldEl){ oldEl.classList.add(dir>0?'leave-to-left':'leave-to-right'); oldEl.addEventListener('animationend',()=>{oldEl.remove();animating=false;},{once:true}); } else { animating=false; }
+    newEl.classList.add(dir>0?'enter-from-right':'enter-from-left');
+    stage.appendChild(newEl);
+  }
+  function swipeUp() {
+    if(animating) return; animating=true;
+    const c = deck[order[cur]];
+    const name = c.name||c.term||c.letter;
+    addToRevision(c, name, set);
+    const oldEl=stage.querySelector('.slide-card');
+    cur=(cur+1)%order.length; updateProg(); flipped=false;
+    const newEl=makeCard(deck[order[cur]]);
+    if(oldEl){ oldEl.classList.add('leave-upward'); oldEl.addEventListener('animationend',()=>{oldEl.remove();animating=false;},{once:true}); } else { animating=false; }
+    newEl.classList.add('enter-from-right');
+    stage.appendChild(newEl);
+    // brief flash
+    showUpFeedback();
+  }
+  function showUpFeedback() {
+    const fb = document.createElement('div');
+    fb.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--warn);color:#fff;font-family:var(--font);font-size:14px;font-weight:800;padding:10px 20px;border-radius:12px;z-index:999;pointer-events:none;transition:opacity 0.4s;';
+    fb.textContent='📚 Added to revision pile!';
+    document.body.appendChild(fb);
+    setTimeout(()=>{fb.style.opacity='0';setTimeout(()=>fb.remove(),400);},900);
+  }
+
+  // colour map
+  const colMap = {blue:'blue',purple:'purple',green:'green',warn:'warn',sky:'sky',danger:'danger'};
+  function cardColor(c) {
+    if(c.type==='cpr') return 'purple';
+    if(c.type==='fw') return colMap[c.color]||'green';
+    if(c.type==='drug') return {full:'blue',dosage:'warn',timing:'sky',indications:'green',ci:'danger'}[mode]||'blue';
+    // terms
+    const catC={conditions:'blue',measurements:'green',routes:'sky','drug-types':'purple',contra:'danger',other:'warn'};
+    return catC[c.cat]||'blue';
+  }
+  const tagStyle={conditions:'background:#dbeafe;color:#1e3a8a',measurements:'background:#d1fae5;color:#064e3b',routes:'background:#e0f2fe;color:#0c4a6e','drug-types':'background:#ede9fe;color:#4c1d95',contra:'background:#fef2f2;color:#7f1d1d',other:'background:#fef9c3;color:#78350f'};
+  const catLabel={conditions:'Condition',measurements:'Measurement',routes:'Route of Admin','drug-types':'Drug Type',contra:'CI Term',other:'Clinical Term'};
+
+  function makeCard(c) {
+    const wrap=document.createElement('div'); wrap.className='slide-card';
+    const inner=document.createElement('div'); inner.className='flip-inner'; wrap.appendChild(inner);
+    const fEl=document.createElement('div'); fEl.className='card-face';
+    const bEl=document.createElement('div'); bEl.className='card-face card-back-face';
+    inner.appendChild(fEl); inner.appendChild(bEl);
+    fillFront(fEl,c); fillBack(bEl,c);
+    inner.addEventListener('click',()=>{flipped=!flipped;inner.classList.toggle('flipped',flipped);});
+    // swipe handling per card
+    attachSwipe(wrap, inner);
+    return wrap;
+  }
+
+  function fillFront(el,c) {
+    const col=cardColor(c);
+    const n=cur+1;
+    // TERM card (set 2) — just big term centred
+    if(c.cat) {
+      el.innerHTML=`<div class="stripe s-${col}"></div><div class="card-body">
+        <div class="card-num n-${col}">${n}</div>
+        <div class="front-center">
+          <span class="cat-tag" style="${tagStyle[c.cat]}">${catLabel[c.cat]}</span>
+          <div class="front-term">${c.term}</div>
+        </div>
+        <div class="flip-hint-text">Tap to flip ↓ &nbsp;·&nbsp; Swipe ↑ to add to revision</div>
+      </div>`; return;
+    }
+    // FRAMEWORK card (set 3)
+    if(c.type==='fw') {
+      el.innerHTML=`<div class="stripe s-${col}"></div><div class="card-body">
+        <div class="card-num n-${col}">${n}</div>
+        <div class="card-label cl-${col}">${c.mnemonic}</div>
+        <div class="card-title">${c.letter}</div>
+        <div class="qpill qp-${col}" style="margin-top:0.5rem;">${c.q}</div>
+        <div class="flip-hint-text">Tap to flip ↓ &nbsp;·&nbsp; Swipe ↑ = revision</div>
+      </div>`; return;
+    }
+    // CPR card
+    if(c.type==='cpr') {
+      el.innerHTML=`<div class="stripe s-purple"></div><div class="card-body">
+        <div class="card-num n-purple">${n}</div>
+        <div class="card-label cl-purple">CPR / Resuscitation</div>
+        <div class="card-title">${c.name}</div>
+        <div class="qpill qp-purple" style="margin-top:0.5rem;">${c.question}</div>
+        <div class="flip-hint-text">Tap to flip ↓ &nbsp;·&nbsp; Swipe ↑ = revision</div>
+      </div>`; return;
+    }
+    // DRUG card
+    const modeLabels={full:'Drug Reference',dosage:'Dosage Card',timing:'Timing Card',indications:'Indications Card',ci:'Contraindications'};
+    const qText={
+      full:'Tap to reveal full details — indications, dose, route, repeat, contraindications &amp; notes.',
+      dosage:'What is the <b>route, dose and volume/preparation</b>?',
+      timing:'What are the <b>repeat dose and timing</b> instructions?',
+      indications:'What are the <b>indications</b> for this drug?',
+      ci:'What are the <b>contraindications</b>?'
+    }[mode];
+    el.innerHTML=`<div class="stripe s-${col}"></div><div class="card-body">
+      <div class="card-num n-${col}">${n}</div>
+      <div class="card-label cl-${col}">${modeLabels[mode]}</div>
+      <div class="card-title">${c.name}</div>
+      <div class="card-sub">${c.sub||''}</div>
+      <div class="qpill qp-${col}">${qText}</div>
+      <div class="flip-hint-text">Tap to flip ↓ &nbsp;·&nbsp; Swipe ↑ = revision</div>
+    </div>`;
+  }
+
+  function fillBack(el,c) {
+    const col=cardColor(c);
+    // TERM
+    if(c.cat) {
+      el.innerHTML=`<div class="stripe s-${col}"></div><div class="card-body">
+        <div class="card-label cl-${col}">${catLabel[c.cat]}</div>
+        <div style="font-size:18px;font-weight:900;margin-bottom:4px;">${c.term}</div>
+        <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:0.75rem;">${c.short}</div>
+        <div class="back-scroll"><div class="abox ab-${col}"><div class="fl">Definition</div><div class="fv">${c.def}</div></div></div>
+      </div>`; return;
+    }
+    // FRAMEWORK
+    if(c.type==='fw') {
+      el.innerHTML=`<div class="stripe s-${col}"></div><div class="card-body">
+        <div class="card-label cl-${col}">${c.mnemonic} — ${c.letter}</div>
+        <div class="back-scroll"><div class="abox ab-${col}"><div class="fl">Answer</div><div class="fv" style="white-space:pre-line;">${c.a}</div></div></div>
+      </div>`; return;
+    }
+    // CPR
+    if(c.type==='cpr') {
+      el.innerHTML=`<div class="stripe s-purple"></div><div class="card-body">
+        <div class="card-label cl-purple">Answer — ${c.name}</div>
+        <div class="back-scroll"><div class="abox ab-purple"><div class="fl">Answer</div><div class="fv" style="white-space:pre-line;">${c.answer}</div></div></div>
+      </div>`; return;
+    }
+    // DRUG full
+    if(mode==='full') {
+      el.innerHTML=`<div class="stripe s-blue"></div><div class="card-body">
+        <div class="card-label cl-blue">Full Details — ${c.name}</div>
+        <div class="back-scroll">
+          <div class="field"><div class="fl">Indications</div><div class="fv">${c.indications}</div></div>
+          <div class="two-col">
+            <div class="field"><div class="fl">Route</div><div class="fv"><b>${c.route}</b></div></div>
+            <div class="field"><div class="fl">Dose</div><div class="fv"><b>${c.dose}</b></div></div>
+          </div>
+          <div class="field"><div class="fl">Volume</div><div class="fv">${c.volume}</div></div>
+          <div class="field"><div class="fl">Repeat</div><div class="fv">${c.repeat}</div></div>
+          <div class="box box-danger"><div class="fl">Contraindications</div><div class="fv">${c.ci}</div></div>
+          <div class="box box-blue"><div class="fl">Clinical Notes</div><div class="fv">${c.notes}</div></div>
+        </div>
+      </div>`; return;
+    }
+    // DRUG quiz modes
+    const col2=cardColor(c);
+    const labs={dosage:'Route, Dose &amp; Volume',timing:'Repeat &amp; Timing',indications:'Indications',ci:'Contraindications'};
+    let inner='';
+    if(mode==='dosage') inner=`<div class="fl">Route</div><div class="fv" style="font-size:15px;font-weight:900;margin-bottom:0.5rem;">${c.route}</div><div class="fl">Dose</div><div class="fv" style="font-size:15px;font-weight:900;margin-bottom:0.5rem;">${c.dose}</div><div class="fl">Volume</div><div class="fv">${c.volume}</div>`;
+    else if(mode==='timing') inner=`<div class="fl">Repeat &amp; Timing</div><div class="fv">${c.repeat}</div>`;
+    else if(mode==='indications') inner=`<div class="fl">Indications</div><div class="fv">${c.indications}</div>`;
+    else if(mode==='ci') inner=`<div class="fl">Contraindications</div><div class="fv">${c.ci}</div>`;
+    el.innerHTML=`<div class="stripe s-${col2}"></div><div class="card-body">
+      <div class="card-label cl-${col2}">${labs[mode]} — ${c.name}</div>
+      <div class="back-scroll"><div class="abox ab-${col2}">${inner}</div></div>
+    </div>`;
+  }
+
+  // ── SWIPE HANDLER ──
+  function attachSwipe(wrap, inner) {
+    let tx=0,ty=0,dragging=false,dxF=0,dyF=0;
+    wrap.addEventListener('touchstart',e=>{
+      tx=e.touches[0].clientX; ty=e.touches[0].clientY; dragging=false; dxF=0; dyF=0;
+    },{passive:true});
+    wrap.addEventListener('touchmove',e=>{
+      const dx=e.touches[0].clientX-tx, dy=e.touches[0].clientY-ty;
+      dxF=dx; dyF=dy;
+      if(!dragging&&(Math.abs(dx)>8||Math.abs(dy)>8)) dragging=true;
+      if(dragging&&Math.abs(dx)>Math.abs(dy)) { e.preventDefault(); inner.style.transform=(flipped?'rotateY(180deg) ':'')+'translateX('+dx*0.28+'px)'; }
+      else if(dragging&&dy<-20&&Math.abs(dy)>Math.abs(dx)) { e.preventDefault(); inner.style.transform=(flipped?'rotateY(180deg) ':'')+'translateY('+dy*0.3+'px)'; }
+    },{passive:false});
+    wrap.addEventListener('touchend',()=>{
+      inner.style.transform='';
+      if(!dragging) return;
+      if(Math.abs(dyF)>Math.abs(dxF) && dyF<-70) { swipeUp(); }
+      else if(Math.abs(dxF)>70) { move(dxF<0?1:-1); }
+      dragging=false;
+    });
+  }
+
+  return {
+    buildDeck,renderCurrent,move,swipeUp,
+    setMode(m) { mode=m; flipped=false; renderCurrent(); },
+    setFilter(f) { filterMode=f; },
+    toggleShuffle() {
+      shuffled=!shuffled; order=deck.map((_,i)=>i);
+      if(shuffled) shuf(order);
+      cur=0; flipped=false; renderCurrent();
+      return shuffled;
+    },
+    getCur() { return cur; },
+    getDeck() { return deck; },
+    getOrder() { return order; },
+  };
+}
+
+// ══════════════════════════════
+// SET 1 — DRUGS & CPR
+// ══════════════════════════════
+const s1 = makeDeckEngine('s1-stage','s1-pbar','s1-lbl','pf-blue','s1');
+let s1Filter='all', s1Mode='full';
+
+const _s1setMode = s1.setMode.bind(s1);
+s1.setMode = function(m) {
+  s1Mode=m;
+  document.querySelectorAll('[data-mode]').forEach(b=>b.className='pill'+(b.dataset.mode===m?' '+{full:'ab',dosage:'aw',timing:'as',indications:'ag',ci:'ad'}[m]:''));
+  _s1setMode(m);
+};
+const _s1setFilter = s1.setFilter.bind(s1);
+s1.setFilter = function(f) {
+  s1Filter=f;
+  document.getElementById('s1-f-all').className='pill'+(f==='all'?' ab':'');
+  document.getElementById('s1-f-drug').className='pill'+(f==='drug'?' ag':'');
+  document.getElementById('s1-f-cpr').className='pill'+(f==='cpr'?' ap':'');
+  const data = f==='drug'?[...DRUGS]:f==='cpr'?[...CPR]:[...DRUGS,...CPR];
+  s1.buildDeck(data);
+  document.getElementById('s1-meta').textContent=data.length+' cards';
+  s1.renderCurrent();
+};
+const _s1toggleShuffle = s1.toggleShuffle.bind(s1);
+s1.toggleShuffle = function() {
+  const on=_s1toggleShuffle();
+  const b=document.getElementById('s1-shuffle');
+  b.textContent='⇄ Shuffle: '+(on?'On':'Off');
+  b.className='pill'+(on?' ap':'');
+};
+
+// ══════════════════════════════
+// SET 2 — JARGON
+// ══════════════════════════════
+const s2 = makeDeckEngine('s2-stage','s2-pbar','s2-lbl','pf-purple','s2');
+const s2FilterIds=['all','cond','meas','rout','dt','con','oth'];
+const s2FilterMap={all:'all',cond:'conditions',meas:'measurements',rout:'routes',dt:'drug-types',con:'contra',oth:'other'};
+const _s2setFilter=s2.setFilter.bind(s2);
+s2.setFilter=function(f){
+  s2FilterIds.forEach(id=>document.getElementById('s2-f-'+id).className='pill'+(s2FilterMap[id]===f?' ap':''));
+  const data=f==='all'?[...TERMS]:TERMS.filter(t=>t.cat===f);
+  s2.buildDeck(data);
+  document.getElementById('s2-meta').textContent=data.length+' terms';
+  s2.renderCurrent();
+};
+const _s2toggleShuffle=s2.toggleShuffle.bind(s2);
+s2.toggleShuffle=function(){
+  const on=_s2toggleShuffle();
+  const b=document.getElementById('s2-shuffle');
+  b.textContent='⇄ Shuffle: '+(on?'On':'Off');
+  b.className='pill'+(on?' ap':'');
+};
+
+// ══════════════════════════════
+// SET 3 — FRAMEWORKS
+// ══════════════════════════════
+const s3 = makeDeckEngine('s3-stage','s3-pbar','s3-lbl','pf-green','s3');
+const _s3setFilter=s3.setFilter.bind(s3);
+s3.setFilter=function(f){
+  const data=f==='all'?[...FRAMEWORKS]:FRAMEWORKS.filter(fw=>fw.mnemonic===f);
+  s3.buildDeck(data);
+  document.getElementById('s3-meta').textContent=data.length+' cards';
+  s3.renderCurrent();
+  document.querySelectorAll('#s3-filter-row .pill').forEach(b=>{
+    b.className='pill'+(b.dataset.fw===f?' ag':'');
+  });
+};
+const _s3toggleShuffle=s3.toggleShuffle.bind(s3);
+s3.toggleShuffle=function(){
+  const on=_s3toggleShuffle();
+  const b=document.getElementById('s3-shuffle');
+  b.textContent='⇄ Shuffle: '+(on?'On':'Off');
+  b.className='pill'+(on?' ap':'');
+};
+
+// build s3 filters dynamically
+function buildS3Filters() {
+  const mnemonics=[...new Set(FRAMEWORKS.map(f=>f.mnemonic))];
+  const row=document.getElementById('s3-filter-row');
+  mnemonics.forEach(m=>{
+    const b=document.createElement('button');
+    b.className='pill'; b.dataset.fw=m; b.textContent=m;
+    b.onclick=()=>s3.setFilter(m);
+    row.appendChild(b);
+  });
+}
+
+// ══════════════════════════════
+// REVISION STUDY MODE
+// ══════════════════════════════
+function renderRevStudy() {
+  // reuse s1 stage for revision study
+  document.getElementById('nav-s1').textContent='📚 Revision Study';
+  const data=revisionPile.map(r=>r.cardRef);
+  s1.buildDeck(data);
+  document.getElementById('s1-meta').textContent='Studying '+data.length+' revision card'+(data.length!==1?'s':'');
+  s1.renderCurrent();
+}
+
+// ══════════════════════════════
+// KEYBOARD
+// ══════════════════════════════
+document.addEventListener('keydown',e=>{
+  const activeSet=document.querySelector('.page.active');
+  if(!activeSet) return;
+  const id=activeSet.id;
+  const eng=id==='page-s1'?s1:id==='page-s2'?s2:id==='page-s3'?s3:null;
+  if(!eng) return;
+  if(e.key==='ArrowRight') eng.move(1);
+  else if(e.key==='ArrowLeft') eng.move(-1);
+  else if(e.key==='ArrowUp') eng.swipeUp();
+  else if(e.key===' '){
+    e.preventDefault();
+    const fi=document.querySelector('.page.active .flip-inner');
+    if(fi){const was=fi.classList.contains('flipped');fi.classList.toggle('flipped',!was);}
+  }
+});
+
+// ══════════════════════════════
+// INIT
+// ══════════════════════════════
+buildS3Filters();
+s1.setFilter('all');
+s2.setFilter('all');
+s3.setFilter('all');
+
+</script>
+</body>
+</html>
